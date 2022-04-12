@@ -9,10 +9,7 @@ const fs = require('fs');
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]});
 
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-const contextFiles = fs.readdirSync('./contextmenus').filter(file => file.endsWith('.js'));
-const buttonFiles = fs.readdirSync('./buttons').filter(file => file.endsWith('.js'));
-const textCommandFiles = fs.readdirSync('./textcommands').filter(file => file.endsWith('.js'));
+const textCommandFiles = fs.readdirSync('./chatcommands').filter(file => file.endsWith('.js'));
 
 
 
@@ -37,31 +34,10 @@ const Tags = sequelize.define('tags', {
 	},
 });
 
-client.commands = new Collection();
-
-for (const file of commandFiles) {
-	const command = require(`./commands/${file}`);
-	client.commands.set(command.data.name, command);
-}
-
-client.buttons = new Collection();
-
-for (const file of buttonFiles) {
-	const button = require(`./buttons/${file}`);
-	client.buttons.set(button.customId, button);
-}
-
-client.contextMenus = new Collection();
-
-for (const file of contextFiles) {
-	const contextMenu = require(`./contextmenus/${file}`);
-	client.contextMenus.set(contextMenu.data.name, contextMenu);
-}
-
 client.textCommands = new Collection();
 
 for (const file of textCommandFiles) {
-	const textCommand = require(`./textcommands/${file}`);
+	const textCommand = require(`./chatcommands/${file}`);
 	client.textCommands.set(textCommand.data.name, textCommand);
 }
 
