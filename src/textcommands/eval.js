@@ -3,6 +3,7 @@ require('dotenv').config()
 const errChannelId = process.env.ERRCHANNELID;
 const errGuildId = process.env.ERRGUILDID;
 
+
 module.exports = {
    data: {
     name: "eval",

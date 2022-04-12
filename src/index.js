@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { Client, Intents, Collection } = require('discord.js');
+const { Sequelize } = require('sequelize')
 const token = process.env.TOKEN;
 const errChannelId = process.env.ERRCHANNELID;
 const errGuildId = process.env.ERRGUILDID;
@@ -11,9 +12,30 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const contextFiles = fs.readdirSync('./contextmenus').filter(file => file.endsWith('.js'));
 const buttonFiles = fs.readdirSync('./buttons').filter(file => file.endsWith('.js'));
-const textCommandFiles = fs.readdirSync('./textcommands').filter(file => file.endsWith('.js'))
+const textCommandFiles = fs.readdirSync('./textcommands').filter(file => file.endsWith('.js'));
 
 
+
+const sequelize = new Sequelize('database', 'user', 'password', {
+	host: 'localhost',
+	dialect: 'sqlite',
+	logging: false,
+	storage: 'database.sqlite',
+});
+
+const Tags = sequelize.define('tags', {
+	name: {
+		type: Sequelize.STRING,
+		unique: true,
+	},
+	description: Sequelize.TEXT,
+	username: Sequelize.STRING,
+	usage_count: {
+		type: Sequelize.INTEGER,
+		defaultValue: 0,
+		allowNull: false,
+	},
+});
 
 client.commands = new Collection();
 
@@ -161,6 +183,23 @@ client.on('error', async (err) => {
 
 	errChannel.send({content: `An error was caught: \n\`\`\`js\n${err.stack}\`\`\``})
 
-})
+});
+
+
+class CommandDaddy {
+	
+	commandType(type) {
+		this.type = type
+	}
+
+	commandName(name) {
+		if (name.length > 16) throw new RangeError(`Error:\nCommand names cannot be longer than 15 characters, but ${name} has a length of ${name.length}`)
+	}
+
+}
+
+module.exports = { CommandDaddy }
+
+
 
 client.login(token);
