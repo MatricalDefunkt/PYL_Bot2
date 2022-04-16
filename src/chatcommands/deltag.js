@@ -4,7 +4,7 @@ const { Tags } = require('../database/database')
 
 module.exports = {
     data: {
-        name: 'gettags',
+        name: 'deltag',
         ownerOnly: false,
         staffOnly: true,
         adminOnly: false
@@ -30,19 +30,60 @@ module.exports = {
             .setCustomId('dotagdelete')
             .setLabel('Yes, delete')
             .setStyle('DANGER')
-            .emoji('✅'),
+            .setEmoji('✅'),
 
             new MessageButton()
             .setCustomId('cancletagdelete')
             .setLabel('No, cancel')
             .setStyle('SUCCESS')
-            .emoji('❎')
+            .setEmoji('❎')
+        )
+
+        const disabledRow = new ActionRow().addComponents(
+            new MessageButton()
+            .setCustomId('dotagdelete')
+            .setLabel('Yes, delete')
+            .setStyle('DANGER')
+            .setEmoji('✅')
+            .setDisabled(true),
+
+            new MessageButton()
+            .setCustomId('canceltagdelete')
+            .setLabel('No, cancel')
+            .setStyle('SUCCESS')
+            .setEmoji('❎')
+            .setDisabled(true)
         )
         const reply = await msg.reply({content: `Are you sure you want to delete the tag \`${tag.getDataValue('tagName')}\`?`, components: [row]})
-        const btnCollector = new InteractionCollector(client, {interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON', guild: msg.guild, max: 1, maxComponents: 1, message: reply})
+        const btnCollector = new InteractionCollector(client, {interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON', guild: msg.guild, max: 1, maxComponents: 1, message: reply, time: 60000})
 
         btnCollector.on('collect', async button => {
-            button.reply({content: 'Doing...', ephemeral: true})
+            console.log(button);
+            if (button.customId === 'dotagdelete') {
+                tag.destroy().then(() => {
+                    button.reply({content: `Tag ${args[0]} was deleted.`})
+                    reply.edit({content: reply.content, components: [disabledRow]})
+                })
+            } else if (button.customId === 'canceltagdelete') {
+                console.log('here2')
+                await button.reply({content: `Cancelled the deletion of ${args[0]}!`}).then(() => {
+                    reply.edit({content: reply.content, components: [disabledRow]})
+                })
+            }
+        })
+        btnCollector.on('end', async collected => {
+            if (collected.size > 0) {
+                console.log('ended')
+                return
+            } else {
+                msg.reply({content: `Timed out. (60 seconds have passed.)`}).then(msgReply => {
+                    setTimeout(() => {
+                        msgReply.delete()
+                        msg.delete()
+                        reply.delete()
+                    }, 15000);
+                })
+            }
         })
     }
 }
