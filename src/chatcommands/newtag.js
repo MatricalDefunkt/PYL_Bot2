@@ -20,19 +20,21 @@ module.exports = {
     ),
     async execute (msg, client, args) {
 
-        if (args[1] != 'everyone' && args[1] != 'staff-only' && args[1] != 'admin-only' || !args[1]) {
+        if (!args[1] || !args[2]) {
+            return msg.reply({content: `\`\`\`diff\n- Invalid arguements.\`\`\``, embeds: [this.helpEmbed]})
+        }
+
+        if (args[1].toLowerCase() != 'everyone' && args[1] != 'staff-only' && args[1] != 'admin-only' || !args[1]) {
             return msg.reply(
                 {
-                    content: 'Please include whether you want the tag to be usable by everyone, only staff or only admins by typing \'everyone\', \'staff-only\' or \'admin-only\' in the second arguement.'
+                    content: 'Please include whether you want the tag to be usable by everyone, only staff or only admins by typing \`everyone\`, \`staff-only\` or \`admin-only\` in the second arguement, and try again.'
                 }
             )
         } else {
 
-            if (!args[2]) return msg.reply({content: 'Please include the reply for the tag and try again.'})
-
             let integerPerm;
 
-            switch (args[1]) {
+            switch (args[1].toLowerCase()) {
                 case 'everyone':
                     integerPerm = 0
                     break;
@@ -60,7 +62,9 @@ module.exports = {
             } catch (error) {
 
                 if (error.name == 'SequelizeUniqueConstraintError') {
-                    return msg.reply({content: `Tag with the name '${args[0]}' already exists`})
+                    return msg.reply({content: `Tag with the name \`${args[0]}\` already exists.`})
+                } else {
+                    return msg.reply({content: `There was an error. please contact Matrical ASAP.`})
                 }
                 
             }
