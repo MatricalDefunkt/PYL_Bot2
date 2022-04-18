@@ -22,6 +22,16 @@ module.exports = {
     ),
     async execute (msg, client, args) {
 
+        if (!args[0]) {
+            return msg.reply({embeds:[this.helpEmbed]}).then(msg => setTimeout(() => {
+                try {
+                    msg.delete()
+                } catch (err) {
+                    console.error(err)
+                }
+            }, 30000))
+        }
+
         const tag = await Tags.findOne({where: {tagName: `${args[0]}`}});
 
         if (!tag) return msg.reply({content: `Tag with name \`${args[0]}\` was not found.`})

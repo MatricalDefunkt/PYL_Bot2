@@ -9,16 +9,26 @@ module.exports = {
         adminOnly: false
     },
     helpEmbed: new MessageEmbed()
-        .setTitle("Use of GetTags")
+        .setTitle("Use of GetTag")
         .setAuthor({
             name: "PYL Bot#9640",
             iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
         })
         .setColor("GREEN")
         .setDescription(
-            `Syntax and use of 'gettags' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   !!gettags <all / tag-name>\`\`\`\n\`\`\`\nUse:\nThe gettags command replies to the command with either all the tags for PYL or, if given a name, data about that tag.\`\`\``
+            `Syntax and use of 'gettag' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   !!gettag <all / tag-name>\`\`\`\n\`\`\`\nUse:\nThe gettag command replies to the command with either all the tags for PYL or, if given a name, data about that tag.\`\`\``
     ),
     async execute (msg, client, args) {
+
+        if (!args[0]) {
+            return msg.reply({embeds:[this.helpEmbed]}).then(msg => setTimeout(() => {
+                try {
+                    msg.delete()
+                } catch (err) {
+                    console.error(err)
+                }
+            }, 30000))
+        }
 
         const permissionHandle = (permissionLevel) => {
             switch (permissionLevel) {

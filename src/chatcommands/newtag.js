@@ -20,6 +20,16 @@ module.exports = {
     ),
     async execute (msg, client, args) {
 
+        if (!args[0]) {
+            return msg.reply({embeds:[this.helpEmbed]}).then(msg => setTimeout(() => {
+                try {
+                    msg.delete()
+                } catch (err) {
+                    console.error(err)
+                }
+            }, 30000))
+        }
+
         if (!args[1] || !args[2]) {
             return msg.reply({content: `\`\`\`diff\n- Invalid arguements.\`\`\``, embeds: [this.helpEmbed]})
         }

@@ -18,6 +18,17 @@ module.exports = {
     `Syntax and use of 'newlang' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   !!newlang <name of new language>\`\`\`\n\`\`\`\nUse:\nNewLang helps in creating a new language category by making a new category, general chat, no-speaking text, and voice channel.\nOnce you've run the first command, that is !!newlang <name of language>, you will be asked for 3 inputs, namely the names of the three channels.\`\`\``
   ),
   async execute(msg, client, args) {
+
+    if (!args[0]) {
+      return msg.reply({embeds:[this.helpEmbed]}).then(msg => setTimeout(() => {
+        try {
+          msg.delete()
+        } catch (err) {
+          console.error(err)
+        }
+      }, 30000))
+    }
+
     reply = await msg.reply({ content: `Creating...` });
 
     const category = await msg.guild.channels.create(`${args[0]}`, {
