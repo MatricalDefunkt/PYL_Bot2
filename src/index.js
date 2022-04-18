@@ -14,11 +14,15 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_
 const textCommandFiles = fs.readdirSync(path.join(__dirname, './chatcommands')).filter(file => file.endsWith('.js'));
 
 client.textCommands = new Collection();
+const names = []
 
 for (const file of textCommandFiles) {
 	const textCommand = require(`./chatcommands/${file}`);
+	names.push(textCommand.data.name)
 	client.textCommands.set(textCommand.data.name, textCommand);
 }
+
+const autocorrect = require('autocorrect')({words: names})
 
 client.once('ready', () => {
 	console.log('Ready!');
@@ -39,15 +43,22 @@ const getErrChannel = async (errGuild, errChannel) => {
 
 getErrChannel(errGuild, errChannel);
 
-//Command listener
+/**
+ * <prefix>@commandName ...@arguments
+ * 
+ * If ( !@arguments ) return helpEmbed
+ */
 client.on('messageCreate', async (msg) => {
 
 	if (!msg.guild) return;
 	if (msg.author.bot) return;
 	if (msg.content.startsWith(`${prefix}`)) {
 
-		const args = msg.content.substring(`${prefix.length}`).toLowerCase().split(' ')
-		const command = client.textCommands.get(args[0])
+		const args = msg.content.substring(`${prefix.length}`).split(' ')
+		if (autocorrect(args[0]) != args[0]) {
+			return msg.author.send({content: `Did you mean \`${autocorrect(args[0])}\`?`})
+		}
+		const command = client.textCommands.get(args[0].toLowerCase())
 
 		if (!command) {return} else {
 
@@ -62,14 +73,6 @@ client.on('messageCreate', async (msg) => {
 				return
 			}
 
-			if (!args[1]) {
-				return msg.reply({embeds:[command.helpEmbed]}).then(msg => setTimeout(() => {
-					try {
-						msg.delete()
-					} catch (err) {console.error(err)}
-				}, 300))
-			}
-
 			args.shift()
 			
 			try {
@@ -78,6 +81,7 @@ client.on('messageCreate', async (msg) => {
 
 			} catch (error) {
 
+				msg.reply({content: 'There was an error. Please contact Matrical ASAP'})
 				errChannel.send({content: `An error was caught: \n\`\`\`js\n${error.stack}\`\`\``})
 
 			}
@@ -131,5 +135,11 @@ client.on('error', async (err) => {
 	errChannel.send({content: `An error was caught: \n\`\`\`js\n${err.stack}\`\`\``})
 
 });
+
+client.on('rateLimit', async (rateLimitData) => {
+	getErrChannel(errGuild, errChannel)
+	console.log(rateLimitData);
+	errChannel.send({content: `<@714473790939332679>\nBeing rate limited!\n\`\`\`json\n${rateLimitData}\`\`\``})
+})
 
 client.login(token);
