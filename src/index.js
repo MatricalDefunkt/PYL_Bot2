@@ -123,6 +123,8 @@ client.on('messageCreate', async (msg) => {
 				if (msg.member._roles.includes('963537947255255092')) {return msg.reply({content: `${tag.getDataValue('tagReply')}`})} else return msg.reply({content: `Missing permissions`})	
 			case 2:
 				if (msg.member._roles.includes('963537994596364288')) {return msg.reply({content: `${tag.getDataValue('tagReply')}`})} else return msg.reply({content: `Missing permissions`})
+			default:
+				return msg.reply({content: `Tag permissions were incorrectly stored. Please contact Matrical ASAP.`})
 		}
 
 	}
