@@ -11,13 +11,13 @@ const fs = require('fs');
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES]});
 
-const textCommandFiles = fs.readdirSync(path.join(__dirname, './chatcommands')).filter(file => file.endsWith('.js'));
+const textCommandFiles = fs.readdirSync(path.join(__dirname, './commands_chat')).filter(file => file.endsWith('.js'));
 
 client.textCommands = new Collection();
 const names = []
 
 for (const file of textCommandFiles) {
-	const textCommand = require(`./chatcommands/${file}`);
+	const textCommand = require(`./commands_chat/${file}`);
 	names.push(textCommand.data.name)
 	client.textCommands.set(textCommand.data.name, textCommand);
 }
@@ -101,7 +101,7 @@ client.on('messageCreate', async (msg) => {
 			msg.delete()
 			setTimeout(() => {
 				reply.delete()
-			}, 10000);
+			}, 4000);
 			return;
 		}
 		
@@ -112,7 +112,7 @@ client.on('messageCreate', async (msg) => {
 			msg.delete()
 			setTimeout(() => {
 				reply.delete()
-			}, 10000);
+			}, 4000);
 			return;
 		}
 
