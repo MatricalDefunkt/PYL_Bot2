@@ -1,6 +1,8 @@
 module.exports = {
   data: {
     name: "ping",
+  },
+  permissions: {
     ownerOnly: false,
     staffOnly: false,
     adminOnly: false,
@@ -10,7 +12,7 @@ module.exports = {
     sent.edit(
       `Roundtrip latency is ${
         sent.createdTimestamp - msg.createdTimestamp
-      }ms, <@${sent.mentions.repliedUser.id}>`
+      }ms.>`
     );
   }
 }
