@@ -18,7 +18,9 @@
     "path": "^0.12.7",
     "sequelize": "^6.19.0",
     "sqlite": "^4.0.25",
-    "sqlite3": "^4.2.0",
+    "sqlite3": "https://github.com/tryghost/node-sqlite3/tarball/master"
+  },
+  "devDependencies": {
     "typescript": "^4.6.3"
   }
 }
