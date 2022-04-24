@@ -131,3 +131,6 @@ database.sqlite
 
 # Server Specific
 rules.json
+
+#Custom Tests
+interactdb.js
