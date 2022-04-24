@@ -102,7 +102,7 @@ module.exports = {
             reason = { id: 0, rule: interaction.options.getString( 'custom-reason' ) }
             if ( !reason )
             {
-                reason = { id: 0, rule: 'None Provided.' };
+                reason = { id: 0, rule: 'None provided.', reason: 'None provided.' };
             }
 
         } else
@@ -141,7 +141,8 @@ module.exports = {
             } ).then( () =>
             {
                 interaction.editReply( { content: `${ bannee } has recieved the ban message.\nBanning now...` } )
-                bannee.ban( { days: time, reason: `${reason.reason}` } )
+                bannee
+                    .ban( { days: time, reason: `${interaction.user.tag} || ${reason.reason}` } )
                     .then(
                         interaction.editReply( { content: `${ bannee } has been banned.` } )
                     )
@@ -158,7 +159,17 @@ module.exports = {
             if ( e.code === 50007 )
             {
                 await interaction.editReply( { content: `Cannot send messages to ${ bannee }\nBanning now...` } )
-                await bannee.ban( { days: time, reason: `${reason.reason}` } )
+                await bannee
+                    .ban( { days: time, reason: `${reason.reason}` } )
+                    .then(
+                        interaction.editReply( { content: `${ bannee } has been banned.` } )
+                    )
+                    .catch(
+                        ( rejectedReason ) =>
+                        {
+                            interaction.editReply( { content: `Something went wrong. Please contact Matrical ASAP.` } )
+                            console.log(rejectedReason)
+                        } )
             } else
             {
                 console.error( e )
