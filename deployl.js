@@ -8,14 +8,14 @@ const clientId = process.env.CLIENTID;
 
 const commands = [];
 const commandFiles = fs
-  .readdirSync("./commands_slash")
+  .readdirSync("./src/commands_slash")
   .filter((file) => file.endsWith(".js"));
 const contextFiles = fs
-  .readdirSync("./commands_contextmenu")
+  .readdirSync("./src/commands_contextmenu")
   .filter((file) => file.endsWith(".js"));
 
 for (const file of commandFiles) {
-  const command = require(`./commands_slash/${file}`);
+  const command = require(`./src/commands_slash/${file}`);
   commands.push(command.data.toJSON());
 }
 
