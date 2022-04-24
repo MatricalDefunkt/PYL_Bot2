@@ -41,10 +41,10 @@ module.exports = {
         if ( interaction.options.getString( 'user-id' ).length != 18 ) return interaction.editReply( { content: `Please enter a valid user ID` } )
         const reason = interaction.options.getString( 'reason' )
 
-        interaction.guild.bans.fetch(unbanId).then(unbanUser =>
+        interaction.guild.bans.fetch( unbanId ).then( unbanUser =>
         {
-            interaction.editReply( { content: `Unbanning <@${unbanId}>` } )
-            interaction.guild.bans.remove( unbanId, String( reason ) ).then( ( unbannedUser ) =>
+            interaction.editReply( { content: `Unbanning <@${ unbanId }>` } )
+            interaction.guild.bans.remove( unbanId, `${ interaction.user.tag } || ${ reason }` ).then( ( unbannedUser ) =>
             {
                 interaction.editReply( { content: `Unbanned ${ unbannedUser }.` } )
 
@@ -58,7 +58,7 @@ module.exports = {
         } ).catch( ( err ) =>
         {
 
-            if (err.code === 10026) return interaction.editReply( { content: `<@${ unbanId }> has not been banned.` } )
+            if ( err.code === 10026 ) return interaction.editReply( { content: `<@${ unbanId }> has not been banned.` } )
             interaction.editReply( { content: `There was an error. Please contact Matrical ASAP.` } )
             console.error( err );
 
