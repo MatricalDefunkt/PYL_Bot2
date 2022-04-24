@@ -28,7 +28,8 @@ const tempBans = sequelize.define( 'tempBans', {
     },
     finishTimeStamp: Sequelize.INTEGER,
     modID: Sequelize.TEXT,
-    reason: Sequelize.STRING,
+    reason: Sequelize.TEXT,
+    guildID: Sequelize.TEXT
 }, {
     tableName: 'tempBans',
 } );
