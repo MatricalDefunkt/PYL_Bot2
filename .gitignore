@@ -126,11 +126,4 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# Database
-database.sqlite
 
-# Server Specific
-rules.json
-
-#Custom Tests
-interactdb.js
