@@ -82,7 +82,7 @@ module.exports = {
             reason = { id: 0, rule: interaction.options.getString( 'custom-reason' ) }
             if ( !reason )
             {
-                reason = { id: 0, rule: 'None Provided.' };
+                reason = { id: 0, rule: 'None provided.', reason: 'None provided' };
             }
 
         } else
@@ -107,7 +107,8 @@ module.exports = {
             } ).then( () =>
             {
                 interaction.editReply( { content: `${ kickee } has recieved the kick message.\nKicking now...` } )
-                kickee.kick( reason.reason )
+                kickee
+                    .kick( `${ interaction.user.tag } || ${ reason.reason }` )
                     .then(
                         interaction.editReply( { content: `${ kickee } has been kicked.` } )
                     )
@@ -124,7 +125,8 @@ module.exports = {
             if ( e.code === 50007 )
             {
                 await interaction.editReply( { content: `Cannot send messages to ${ kickee }\nKicking now...` } )
-                await kickee.kick( reason.reason )
+                await kickee
+                    .kick( reason.reason )
                     .then(
                         interaction.editReply( { content: `${ kickee } has been kicked, but did not recieve the message.` } )
                     )
