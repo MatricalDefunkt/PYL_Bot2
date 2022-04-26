@@ -81,6 +81,8 @@ module.exports = {
         let _reason = interaction.options.getInteger( 'reason' );
         const time = interaction.options.getInteger( 'msg-history' );
 
+        if ( !bannee ) return interaction.editReply( { content: `The person you want to ban is not a member of this discord server.` } )
+
         if ( bannee.bannable == false )
         {
             return interaction.editReply( { content: `I cannot ban ${ bannee }. They're too powerful 🤯!!` } )
@@ -142,7 +144,7 @@ module.exports = {
             {
                 interaction.editReply( { content: `${ bannee } has recieved the ban message.\nBanning now...` } )
                 bannee
-                    .ban( { days: time, reason: `${interaction.user.tag} || ${reason.reason}` } )
+                    .ban( { days: time, reason: `${ interaction.user.tag } || ${ reason.reason }` } )
                     .then(
                         interaction.editReply( { content: `${ bannee } has been banned.` } )
                     )
@@ -150,7 +152,7 @@ module.exports = {
                         ( rejectedReason ) =>
                         {
                             interaction.editReply( { content: `Something went wrong. Please contact Matrical ASAP.` } )
-                            console.log(rejectedReason)
+                            console.log( rejectedReason )
                         } )
             } )
         } catch ( e )
@@ -160,7 +162,7 @@ module.exports = {
             {
                 await interaction.editReply( { content: `Cannot send messages to ${ bannee }\nBanning now...` } )
                 await bannee
-                    .ban( { days: time, reason: `${reason.reason}` } )
+                    .ban( { days: time, reason: `${ reason.reason }` } )
                     .then(
                         interaction.editReply( { content: `${ bannee } has been banned.` } )
                     )
@@ -168,7 +170,7 @@ module.exports = {
                         ( rejectedReason ) =>
                         {
                             interaction.editReply( { content: `Something went wrong. Please contact Matrical ASAP.` } )
-                            console.log(rejectedReason)
+                            console.log( rejectedReason )
                         } )
             } else
             {

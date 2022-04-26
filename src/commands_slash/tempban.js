@@ -95,6 +95,8 @@ module.exports = {
         const time = interaction.options.getInteger( "msg-history" );
         const _duration = interaction.options.getString( "duration" );
 
+        if ( !bannee ) return interaction.editReply( { content: `The person you want to ban is not a member of this discord server.` } )
+
         if ( bannee.bannable == false )
         {
             return interaction.editReply( {
@@ -168,12 +170,12 @@ module.exports = {
                 hours: parseInt( hours.replace( "h", "" ) ),
             };
 
-            if ( duration.days < 0 || duration.weeks < 0 || duration.hours < 0 ) return interaction.editReply( { content: `Time cannot go in reverse lol` } )
+            if ( duration.days < 1 || duration.weeks < 1 || duration.hours < 1 ) return interaction.editReply( { content: `Minimum duration of a ban is 1H, sadly.` } )
 
             durationTimestamp = Math.trunc( interaction.createdTimestamp / 1000 ) + (
-                (duration.weeks * 604800) +
-                (duration.days * 86400) +
-                (duration.hours * 3600)
+                ( duration.weeks * 604800 ) +
+                ( duration.days * 86400 ) +
+                ( duration.hours * 3600 )
             )
 
             await tempBans
