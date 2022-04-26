@@ -1,5 +1,3 @@
-
-
 require( "dotenv" ).config();
 const errChannelId = process.env.ERRCHANNELID;
 const errGuildId = process.env.ERRGUILDID;
@@ -19,10 +17,6 @@ const createWebhook = async ( channelForWebhook, client, msg, sendEmbed ) =>
 			content: `Deleted message by ${ msg.author.tag }`,
 			embeds: [ sendEmbed ],
 		} )
-		.then( ( msg ) =>
-		{
-			messageWebhook.delete();
-		} )
 		.catch( async ( err ) =>
 		{
 			const errGuild = await client.guilds.fetch(
@@ -40,11 +34,32 @@ const createWebhook = async ( channelForWebhook, client, msg, sendEmbed ) =>
 		} );
 }
 
+const getReply = async ( msgId, msg ) =>
+{
+	const reply = await msg.channel.messages.fetch( msgId ).catch( async error =>
+	{
+		if ( error.code === 10008 ) return
+		const errGuild = await client.guilds.fetch(
+			`${ errGuildId }`
+		);
+		const errChannel = await errGuild.channels.fetch(
+			`${ errChannelId }`
+		);
+
+		console.error( error );
+
+		await errChannel.send( {
+			content: `There was an error:\n\`\`\`js\n${ err }\`\`\``,
+		} )
+	} )
+	return ( reply ) ? reply.content : "`Message was deleted.`"
+}
+
 module.exports = {
 	name: "messageDelete",
 	async handle ( client, msg )
 	{
-		if (msg.author.bot) return;
+		if ( msg.author.bot ) return;
 		const sendEmbed = new MessageEmbed()
 			.setAuthor( {
 				name:
@@ -61,20 +76,19 @@ module.exports = {
 				"In reply to:",
 				!msg.reference
 					? "`Null`"
-					: `\n${ (
-						await msg.channel.messages.fetch(
-							msg.reference.messageId
-						)
-					).content
-					}`
+					: `\n${ await getReply( msg.reference.messageId, msg ) }`
 			)
 			.setColor( "RED" );
+
 		const _logChannel = msg.guild.channels.cache.find(
 			( channel ) =>
 				channel.name === "🔴┃message-log" &&
 				channel.type === "GUILD_TEXT"
 		);
-		const logChannel = await _logChannel.fetch();
+		const logChannel = ( _logChannel ) ? await _logChannel.fetch() : null
+
+		const webhooks = ( logChannel ) ? await logChannel.fetchWebhooks() : null
+		const webhook = ( webhooks ) ? webhooks.find( hook => hook.name === 'PYL Message Logs' && hook.owner.id === client.user.id ) : null
 
 		if ( !logChannel )
 		{
@@ -119,7 +133,7 @@ module.exports = {
 								id: "963537947255255092",
 							},
 						],
-						parent: category.id ? category.id : newCategory.id,
+						parent: category ? category.id : newCategory.id,
 					}
 				);
 				createWebhook( newLogChannel, client, msg, sendEmbed )
@@ -137,9 +151,30 @@ module.exports = {
 				} );
 				return;
 			}
-		} else
+		}
+		if ( webhook )
 		{
-			createWebhook( logChannel, client, msg, sendEmbed )
+			webhook
+				.send( {
+					content: `Deleted message by ${ msg.author.tag }`,
+					embeds: [ sendEmbed ],
+				} )
+				.catch( async ( err ) =>
+				{
+					const errGuild = await client.guilds.fetch(
+						`${ errGuildId }`
+					);
+					const errChannel = await errGuild.channels.fetch(
+						`${ errChannelId }`
+					);
+
+					console.error( error );
+
+					await errChannel.send( {
+						content: `There was an error:\n\`\`\`js\n${ err }\`\`\``,
+					} );
+				} );
+			return;
 		}
 	},
 };
