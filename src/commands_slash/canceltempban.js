@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require( '@discordjs/builders' )
 const { MessageEmbed, MessageActionRow, MessageButton, InteractionCollector } = require( 'discord.js' )
 const { tempBans } = require( '../database/database' )
-const { rules } = require( '../rules.json' )
+const { rules } = require( '../utils/rules.json' )
 
 module.exports = {
     data:
@@ -67,9 +67,16 @@ module.exports = {
             buttonCollector.on( 'collect', async collected =>
             {
                 await collected.deferReply( { ephemeral: true } )
-                if (collected.customId === 'addtempban') {
-                    collected.editReply({content: `Send a message in this channel for the reason of conversion within one minute`})
-                    const reason = collected.channel.awaitMessages()
+                if ( collected.customId === 'addtempban' )
+                {
+                    await collected.editReply( { content: `Send a message in this channel for the reason of conversion within one minute` } )
+                    const filter = msg => msg.author === collected.user
+                    const reason = await collected.channel.awaitMessages( { filter: filter, max: 1, time: 60000 } )
+                    if ( !reason )
+                    {
+                        await collected.editReply( { content: `You did not reply in time. Please try again` } )
+                        return
+                    }
                 }
             } )
             return
