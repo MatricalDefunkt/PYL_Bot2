@@ -23,7 +23,7 @@ module.exports = {
     async execute ( msg, client, args )
     {
 
-        console.log(msg)
+        console.log( msg )
 
         if ( !args[ 0 ] )
         {
@@ -38,8 +38,8 @@ module.exports = {
                 }
             }, 30000 ) )
         }
- 
-        if (!msg.mentions.users.first()) {return msg.reply({content: `Mention someone.`})}
+
+        if ( !msg.mentions.users.first() ) { return msg.reply( { content: `Mention someone.` } ) }
 
         const member = msg.mentions.users.first()
 
@@ -47,10 +47,11 @@ module.exports = {
 
         let i = 0
 
-        setInterval( () =>  {
-            i ++
-            msg.channel.send({content: `${member}`}).then(message => message.delete())
-            if (i >= 5) return;
-        }, 300)
+        setInterval( () =>
+        {
+            i++
+            msg.channel.send( { content: `${ member }` } ).then( message => message.delete() )
+            if ( i >= 5 ) return;
+        }, 300 )
     }
 }
