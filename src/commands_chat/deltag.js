@@ -1,7 +1,6 @@
 const { ActionRow } = require( '@discordjs/builders' );
 const { MessageEmbed, MessageButton, InteractionCollector } = require( 'discord.js' )
 const { Tags } = require( '../database/database' )
-const { wait } = require( '../wait' )
 
 module.exports = {
     data: {
