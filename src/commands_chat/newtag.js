@@ -87,7 +87,7 @@ module.exports = {
                     tagAuthor: `${ msg.author.id }`,
                 } );
 
-                msg.reply( { content: `${ tag.toJSON() }` } )
+                msg.reply( { content: `New tag with the name \`${ args[ 0 ] }\` was created successfully!!` } )
 
             } catch ( error )
             {
