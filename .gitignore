@@ -134,3 +134,6 @@ rules.json
 
 #Custom Tests
 interactdb.js
+
+#vsCode
+.VSCode
