@@ -52,7 +52,7 @@ const getReply = async ( msgId, msg ) =>
 			content: `There was an error:\n\`\`\`js\n${ err }\`\`\``,
 		} )
 	} )
-	return ( reply ) ? reply.content : "`Message was deleted.`"
+	return ( reply ) ? reply.content : ( msg.channel.messages.cache.get( msgId ) ) ? msg.channel.messages.cache.get( msgId ) : "Message was not found."
 }
 
 module.exports = {
@@ -136,6 +136,7 @@ module.exports = {
 						parent: category ? category.id : newCategory.id,
 					}
 				);
+				newLogChannel.lockPermissions();
 				createWebhook( newLogChannel, client, msg, sendEmbed )
 			} catch ( error )
 			{
