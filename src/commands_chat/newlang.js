@@ -62,6 +62,18 @@ module.exports = {
           }
         );
         return channel;
+      } )
+      .catch( async ( err ) =>
+      {
+        await msg.reply( { content: `You did not reply in time` } )
+        channel = await msg.guild.channels.create(
+          `${ args[ 0 ] } general`,
+          {
+            type: "GUILD_TEXT",
+            parent: category,
+          }
+        );
+        return channel;
       } );
 
     await msg.channel.send( {
@@ -79,6 +91,18 @@ module.exports = {
           }
         );
         return noVoice;
+      } )
+      .catch( async ( err ) =>
+      {
+        await msg.reply( { content: `You did not reply in time` } )
+        channel = await msg.guild.channels.create(
+          `${ args[ 0 ] } No-voice`,
+          {
+            type: "GUILD_TEXT",
+            parent: category,
+          }
+        );
+        return channel;
       } );
 
     await msg.channel.send( {
@@ -93,6 +117,18 @@ module.exports = {
           parent: category,
         } );
         return voice;
+      } )
+      .catch( async ( err ) =>
+      {
+        await msg.reply( { content: `You did not reply in time` } )
+        channel = await msg.guild.channels.create(
+          `${ args[ 0 ] } Voice`,
+          {
+            type: "GUILD_TEXT",
+            parent: category,
+          }
+        );
+        return channel;
       } );
 
     await category.permissionOverwrites.set( [
