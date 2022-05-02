@@ -33,19 +33,34 @@ const tempBans = sequelize.define( 'tempBans', {
 }, {
     tableName: 'tempBans',
 } );
+
+const Infractions = sequelize.define( 'Infractions', {
+    caseID: {
+        type: Sequelize.TEXT,
+        unique: true,
+        primaryKey: true
+    },
+    type: Sequelize.TEXT,
+    targetID: Sequelize.TEXT,
+    modID: Sequelize.TEXT,
+    reason: Sequelize.STRING
+}, {
+    tableName: 'Infractions',
+} );
+
 try
 {
-    const sync = async ( Tags, tempBans ) =>
+    async function sync ()
     {
-        await Tags.sync()
-        await tempBans.sync()
+        await Tags.sync();
+        await tempBans.sync();
+        await Infractions.sync();
     }
-    sync( Tags, tempBans )
+    sync()
 } catch ( e )
 {
     console.error( e );
 }
-//TODO: Create table for infractions
 //TODO: Work on it lol
 
-module.exports = { Tags, tempBans }
+module.exports = { Tags, tempBans, Infractions }
