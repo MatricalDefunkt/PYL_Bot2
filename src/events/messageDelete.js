@@ -1,7 +1,7 @@
 require( "dotenv" ).config();
 const errChannelId = process.env.ERRCHANNELID;
 const errGuildId = process.env.ERRGUILDID;
-const { MessageEmbed, Permissions } = require( "discord.js" );
+const { MessageEmbed, Permissions, Client, Message } = require( "discord.js" );
 
 const createWebhook = async ( channelForWebhook, client, msg, sendEmbed ) =>
 {
@@ -52,11 +52,16 @@ const getReply = async ( msgId, msg ) =>
 			content: `There was an error:\n\`\`\`js\n${ err }\`\`\``,
 		} )
 	} )
-	return ( reply ) ? reply.content : ( msg.channel.messages.cache.get( msgId ) ) ? msg.channel.messages.cache.get( msgId ) : "Message was not found."
+	return ( reply ) ? reply.content + `\n\n[Jump to Reply](${reply.url})` : ( ( msg.channel.messages.cache.get( msgId ) ) ? msg.channel.messages.cache.get( msgId ).content + `\n\n[Jump to Reply](${msg.channel.messages.cache.get( msgId ).url})` : "Message was not found." )
 }
 
 module.exports = {
 	name: "messageDelete",
+	/**
+	 * Handles the messageDelete event
+	 * @param {Client} client 
+	 * @param {Message} msg 
+	 */
 	async handle ( client, msg )
 	{
 		if ( msg.author.bot ) return;
@@ -158,7 +163,7 @@ module.exports = {
 			webhook
 				.send( {
 					content: `Deleted message by ${ msg.author.tag }`,
-					embeds: [ sendEmbed ],
+					embeds: [ sendEmbed ]
 				} )
 				.catch( async ( err ) =>
 				{

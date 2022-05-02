@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require( '@discordjs/builders' )
-const { MessageEmbed } = require( 'discord.js' )
+const { MessageEmbed, Client, CommandInteraction } = require( 'discord.js' )
 const { rules } = require( '../utils/rules.json' )
 
 module.exports = {
@@ -73,6 +73,12 @@ module.exports = {
         staffOnly: true,
         adminOnly: false,
     },
+    /**
+     * 
+     * @param {CommandInteraction} interaction 
+     * @param {Client} client 
+     * @returns {Promise<void>}
+     */
     async execute ( interaction, client )
     {
 
@@ -101,8 +107,8 @@ module.exports = {
         if ( _reason == 0 )
         {
 
-            reason = { id: 0, rule: interaction.options.getString( 'custom-reason' ) }
-            if ( !reason )
+            reason = { id: 0, rule: interaction.options.getString( 'custom-reason' ), reason: interaction.options.getString( 'custom-reason' ) }
+            if ( !reason.rule )
             {
                 reason = { id: 0, rule: 'None provided.', reason: 'None provided.' };
             }
