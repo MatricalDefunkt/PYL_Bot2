@@ -4,7 +4,8 @@ module.exports = {
     async handle ( client, rateLimitData )
     {
 
-        console.log( 'Client is being ratelimited.\n' + JSON.stringify(rateLimitData) );
+        console.log( 'Client is being ratelimited.\n' );
+        console.log(rateLimitData);
 
     }
 }
