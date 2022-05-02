@@ -1,93 +1,20 @@
-const { SlashCommandBuilder } = require( "@discordjs/builders" );
-const { MessageEmbed } = require( "discord.js" );
-const { rules } = require( "../utils/rules.json" );
-const { tempBans } = require( "../database/database" );
+const { Client, CommandInteraction, MessageEmbed } = require( 'discord.js' );
+const { tempBans } = require( '../../../database/database' );
+const Infraction = require( '../../../utils/infraction' );
+const { rules } = require( '../../../utils/rules.json' );
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName( "tempban" )
-        .setDescription( "Temporarily bans the given user." )
-        .addUserOption( ( o ) =>
-            o.setName( "user" ).setDescription( "User to ban" ).setRequired( true )
-        )
-        .addIntegerOption( ( o ) =>
-            o
-                .setName( "reason" )
-                .setDescription(
-                    "Reason for the ban (Will appear in Audit Logs)"
-                )
-                .addChoices( [
-                    [ "Custom Reason", 0 ],
-                    [ "Gen Rule#1", 101 ],
-                    [ "Gen Rule#2", 102 ],
-                    [ "Gen Rule#3", 103 ],
-                    [ "Gen Rule#4", 104 ],
-                    [ "Gen Rule#5", 105 ],
-                    [ "Gen Rule#6", 106 ],
-                    [ "Gen Rule#7", 107 ],
-                    [ "Gen Rule#8", 108 ],
-                    [ "Voice Rule#1", 201 ],
-                    [ "Voice Rule#2", 202 ],
-                    [ "Voice Rule#3", 203 ],
-                    [ "Voice Rule#4", 204 ],
-                    [ "Voice Rule#5", 205 ],
-                    [ "Voice Rule#6", 206 ],
-                    [ "Voice Rule#7", 207 ],
-                ] )
-                .setRequired( true )
-        )
-        .addIntegerOption( ( o ) =>
-            o
-                .setName( "msg-history" )
-                .setDescription( "Delete the message history for the given time" )
-                .addChoices( [
-                    [ "Don't delete", 0 ],
-                    [ "1 Day / 24 Hours", 1 ],
-                    [ "2 Days / 48 Hours", 2 ],
-                    [ "3 Days / 72 Hours", 3 ],
-                    [ "4 Days / 96 Hours", 4 ],
-                    [ "5 Days / 120 Hours", 5 ],
-                    [ "6 Days / 144 Hours", 6 ],
-                    [ "7 Days / 168 Hours", 7 ],
-                ] )
-                .setRequired( true )
-        )
-        .addStringOption( ( o ) =>
-            o
-                .setName( "duration" )
-                .setDescription(
-                    "Duration of the ban. Please input in the style |1W 1D 1H|"
-                )
-                .setRequired( true )
-        )
-        .addBooleanOption( ( o ) =>
-            o
-                .setName( "disputable" )
-                .setDescription( "Whether the ban is disputable or not." )
-        )
-        .addStringOption( ( o ) =>
-            o
-                .setName( "custom-reason" )
-                .setDescription(
-                    "Please type the custom reason for the ban if you have chosen \"Custom Reason\" under 'Reason'"
-                )
-        ),
-    helpEmbed: new MessageEmbed()
-        .setTitle( "Use of TempBan" )
-        .setAuthor( {
-            name: "PYL Bot#9640",
-            iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
-        } )
-        .setColor( "GREEN" )
-        .setDescription(
-            `Syntax and use of 'TempBan' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   /tempban <user> <reason> <days-of-messages-to-delete> <duration-of-ban> [custom-reason] [disputable || Default: true]\`\`\`\n\`\`\`\nUse:\nThe tempban command temporarily bans the provided user, sending them a DM with the reason, while logging the same reason in the audit logs. If applicable, the message will contain an invite to PYL Ban Appeals. It unbans the user once the time is up.\`\`\``
-        ),
-    permissions: {
-        ownerOnly: false,
-        staffOnly: true,
-        adminOnly: false,
+    data: {
+        name: 'temporary',
+        parent: 'ban'
     },
-    async execute ( interaction, client )
+    /**
+     * 
+     * @param {Client} client 
+     * @param {CommandInteraction} interaction 
+     * @returns {Promise<void>}
+     */
+    async execute ( client, interaction )
     {
         await interaction.deferReply( { ephemeral: true } );
         const bannee = interaction.options.getMember( "user" );
@@ -121,6 +48,7 @@ module.exports = {
             reason = {
                 id: 0,
                 rule: interaction.options.getString( "custom-reason" ),
+                reason: interaction.options.getString( "custom-reason" )
             };
             if ( !reason )
             {
@@ -243,11 +171,14 @@ module.exports = {
                             days: time,
                             reason: `${ interaction.user.tag } || ${ reason.reason }`,
                         } )
-                        .then(
+                        .then( () =>
+                        {
                             interaction.editReply( {
                                 content: `${ bannee } has been banned. They will be unbanned <t:${ durationTimestamp }:R>`,
                             } )
-                        )
+                            const tempBan = new Infraction()
+                            tempBan.addTempBan(interaction.user.id, bannee.id, reason.reason)
+                        } )
                         .catch( ( rejectedReason ) =>
                         {
                             interaction.editReply( {
@@ -288,5 +219,5 @@ module.exports = {
                 console.error( e );
             }
         }
-    },
-};
+    }
+}

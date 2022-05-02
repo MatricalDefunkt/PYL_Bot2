@@ -1,62 +1,170 @@
 const { SlashCommandBuilder } = require( '@discordjs/builders' )
-const { MessageEmbed, Client, CommandInteraction } = require( 'discord.js' )
+const { MessageEmbed, Client, CommandInteraction, Collection } = require( 'discord.js' );
+const Infraction = require( '../utils/infraction' );
 const { rules } = require( '../utils/rules.json' )
+const path = require('path');
+const fs = require('fs');
+
+const subCommands = new Collection()
+const subCommandFiles = fs.readdirSync( path.join( __dirname, './commands_slash_sub/ban' ) ).filter( file => file.endsWith( '.js' ) );
+subCommandFiles.forEach( file =>
+{
+    const subCommand = require( `./commands_slash_sub/ban/${ file }` );
+    subCommands.set( subCommand.data.name, subCommand );
+} )
 
 module.exports = {
     data:
         new SlashCommandBuilder()
             .setName( 'ban' )
             .setDescription( 'Bans the given user.' )
-            .addUserOption( o => o
-                .setName( 'user' )
-                .setDescription( 'User to ban' )
-                .setRequired( true )
+            .addSubcommand( sc => sc
+                .setName( 'permanant' )
+                .setDescription( 'Bans a user, permanantly.' )
+                .addUserOption( o => o
+                    .setName( 'user' )
+                    .setDescription( 'User to ban' )
+                    .setRequired( true )
+                )
+                .addIntegerOption( o => o
+                    .setName( 'reason' )
+                    .setDescription( 'Reason for the ban (Will appear in Audit Logs)' )
+                    .addChoices( [
+                        [ 'Custom Reason', 0 ],
+                        [ 'Gen Rule#1', 101 ],
+                        [ 'Gen Rule#2', 102 ],
+                        [ 'Gen Rule#3', 103 ],
+                        [ 'Gen Rule#4', 104 ],
+                        [ 'Gen Rule#5', 105 ],
+                        [ 'Gen Rule#6', 106 ],
+                        [ 'Gen Rule#7', 107 ],
+                        [ 'Gen Rule#8', 108 ],
+                        [ 'Voice Rule#1', 201 ],
+                        [ 'Voice Rule#2', 202 ],
+                        [ 'Voice Rule#3', 203 ],
+                        [ 'Voice Rule#4', 204 ],
+                        [ 'Voice Rule#5', 205 ],
+                        [ 'Voice Rule#6', 206 ],
+                        [ 'Voice Rule#7', 207 ]
+                    ] )
+                    .setRequired( true )
+                )
+                .addIntegerOption( o => o
+                    .setName( 'msg-history' )
+                    .setDescription( 'Delete the message history for the given time' )
+                    .addChoices( [
+                        [ 'Don\'t delete', 0 ],
+                        [ '1 Day / 24 Hours', 1 ],
+                        [ '2 Days / 48 Hours', 2 ],
+                        [ '3 Days / 72 Hours', 3 ],
+                        [ '4 Days / 96 Hours', 4 ],
+                        [ '5 Days / 120 Hours', 5 ],
+                        [ '6 Days / 144 Hours', 6 ],
+                        [ '7 Days / 168 Hours', 7 ]
+                    ] )
+                    .setRequired( true )
+                )
+                .addBooleanOption( o => o
+                    .setName( 'disputable' )
+                    .setDescription( 'Whether the ban is disputable or not.' )
+                )
+                .addStringOption( o => o
+                    .setName( 'custom-reason' )
+                    .setDescription( 'Please type the custom reason for the ban if you have chosen "Custom Reason" under \'Reason\'' )
+                )
             )
-            .addIntegerOption( o => o
-                .setName( 'reason' )
-                .setDescription( 'Reason for the ban (Will appear in Audit Logs)' )
-                .addChoices( [
-                    [ 'Custom Reason', 0 ],
-                    [ 'Gen Rule#1', 101 ],
-                    [ 'Gen Rule#2', 102 ],
-                    [ 'Gen Rule#3', 103 ],
-                    [ 'Gen Rule#4', 104 ],
-                    [ 'Gen Rule#5', 105 ],
-                    [ 'Gen Rule#6', 106 ],
-                    [ 'Gen Rule#7', 107 ],
-                    [ 'Gen Rule#8', 108 ],
-                    [ 'Voice Rule#1', 201 ],
-                    [ 'Voice Rule#2', 202 ],
-                    [ 'Voice Rule#3', 203 ],
-                    [ 'Voice Rule#4', 204 ],
-                    [ 'Voice Rule#5', 205 ],
-                    [ 'Voice Rule#6', 206 ],
-                    [ 'Voice Rule#7', 207 ]
-                ] )
-                .setRequired( true )
+            .addSubcommand( sc => sc
+                .setName( 'temporary' )
+                .setDescription( 'Bans a user, temporarily.' )
+                .addUserOption( ( o ) =>
+                    o.setName( "user" ).setDescription( "User to ban" ).setRequired( true )
+                )
+                .addIntegerOption( ( o ) => o
+                        .setName( "reason" )
+                        .setDescription(
+                            "Reason for the ban (Will appear in Audit Logs)"
+                        )
+                        .addChoices( [
+                            [ "Custom Reason", 0 ],
+                            [ "Gen Rule#1", 101 ],
+                            [ "Gen Rule#2", 102 ],
+                            [ "Gen Rule#3", 103 ],
+                            [ "Gen Rule#4", 104 ],
+                            [ "Gen Rule#5", 105 ],
+                            [ "Gen Rule#6", 106 ],
+                            [ "Gen Rule#7", 107 ],
+                            [ "Gen Rule#8", 108 ],
+                            [ "Voice Rule#1", 201 ],
+                            [ "Voice Rule#2", 202 ],
+                            [ "Voice Rule#3", 203 ],
+                            [ "Voice Rule#4", 204 ],
+                            [ "Voice Rule#5", 205 ],
+                            [ "Voice Rule#6", 206 ],
+                            [ "Voice Rule#7", 207 ],
+                        ] )
+                        .setRequired( true )
+                )
+                .addIntegerOption( ( o ) => o
+                        .setName( "msg-history" )
+                        .setDescription( "Delete the message history for the given time" )
+                        .addChoices( [
+                            [ "Don't delete", 0 ],
+                            [ "1 Day / 24 Hours", 1 ],
+                            [ "2 Days / 48 Hours", 2 ],
+                            [ "3 Days / 72 Hours", 3 ],
+                            [ "4 Days / 96 Hours", 4 ],
+                            [ "5 Days / 120 Hours", 5 ],
+                            [ "6 Days / 144 Hours", 6 ],
+                            [ "7 Days / 168 Hours", 7 ],
+                        ] )
+                        .setRequired( true )
+                )
+                .addStringOption( ( o ) => o
+                        .setName( "duration" )
+                        .setDescription(
+                            "Duration of the ban. Please input in the style |1W 1D 1H|"
+                        )
+                        .setRequired( true )
+                )
+                .addBooleanOption( ( o ) => o
+                        .setName( "disputable" )
+                        .setDescription( "Whether the ban is disputable or not." )
+                )
+                .addStringOption( ( o ) => o
+                        .setName( "custom-reason" )
+                        .setDescription(
+                            "Please type the custom reason for the ban if you have chosen \"Custom Reason\" under 'Reason'"
+                        )
+                )
             )
-            .addIntegerOption( o => o
-                .setName( 'msg-history' )
-                .setDescription( 'Delete the message history for the given time' )
-                .addChoices( [
-                    [ 'Don\'t delete', 0 ],
-                    [ '1 Day / 24 Hours', 1 ],
-                    [ '2 Days / 48 Hours', 2 ],
-                    [ '3 Days / 72 Hours', 3 ],
-                    [ '4 Days / 96 Hours', 4 ],
-                    [ '5 Days / 120 Hours', 5 ],
-                    [ '6 Days / 144 Hours', 6 ],
-                    [ '7 Days / 168 Hours', 7 ]
-                ] )
-                .setRequired( true )
+            .addSubcommand(sc => sc
+                .setName('convert')
+                .setDescription('Converts a ban to a temporary ban or vice-versa.')
+                .addStringOption( o => o
+                    .setName( 'user-id' )
+                    .setDescription( 'UserID of the user to be converted.' )
+                    .setRequired( true )
+                )
+                .addStringOption( o => o
+                    .setName( 'reason' )
+                    .setDescription( 'Reason for the conversion.' )
+                    .setRequired( true )
+                )
             )
-            .addBooleanOption( o => o
-                .setName( 'disputable' )
-                .setDescription( 'Whether the ban is disputable or not.' )
-            )
-            .addStringOption( o => o
-                .setName( 'custom-reason' )
-                .setDescription( 'Please type the custom reason for the ban if you have chosen "Custom Reason" under \'Reason\'' )
+            .addSubcommand(sc => sc
+                .setName('undo')
+                .setDescription('Unbans the given user.')
+                .setDescription( 'Unbans the given user.' )
+                .addStringOption( o => o
+                    .setName( 'user-id' )
+                    .setDescription( 'UserID of the user to be unbanned.' )
+                    .setRequired( true )
+                )
+                .addStringOption( o => o
+                    .setName( 'reason' )
+                    .setDescription( 'Reason for the unban (Will appear in Audit Logs)' )
+                    .setRequired( true )
+                )
             ),
     helpEmbed: new MessageEmbed()
         .setTitle( "Use of Ban" )
@@ -81,108 +189,26 @@ module.exports = {
      */
     async execute ( interaction, client )
     {
-
         await interaction.deferReply( { ephemeral: true } );
-        const bannee = interaction.options.getMember( 'user' );
-        let _reason = interaction.options.getInteger( 'reason' );
-        const time = interaction.options.getInteger( 'msg-history' );
 
-        if ( !bannee ) return interaction.editReply( { content: `The person you want to ban is not a member of this discord server.` } )
+        const subCommand = subCommands.get( interaction.options.getSubcommand() )
 
-        if ( bannee.bannable == false )
+        if ( subCommand )
         {
-            return interaction.editReply( { content: `I cannot ban ${ bannee }. They're too powerful 🤯!!` } )
-        } else if ( interaction.member === bannee )
-        {
-            return interaction.editReply( { content: `Okay, you have been banned. Now move on.` } )
-        }
-
-        const getRule = ( reasonID ) =>
-        {
-            return rules.find( rule => rule.id == reasonID );
-        }
-
-        let reason;
-
-        if ( _reason == 0 )
-        {
-
-            reason = { id: 0, rule: interaction.options.getString( 'custom-reason' ), reason: interaction.options.getString( 'custom-reason' ) }
-            if ( !reason.rule )
+            try
             {
-                reason = { id: 0, rule: 'None provided.', reason: 'None provided.' };
-            }
-
-        } else
-        {
-
-            reason = getRule( _reason )
-
-        }
-
-        const disputable = interaction.options.getBoolean( 'disputable' )
-        let disputableReply;
-
-        if ( disputable === false )
-        {
-            disputableReply = `Since this ban has been set as non-disputable, you may not dispute it, as it is now final.`
-        }
-        else 
-        {
-            disputableReply = `Since this ban has been set as disputable, you may join [this](https://discord.gg/UEwR4CUrug) server and dispute the ban there.`
-        }
-
-        try
-        {
-            const dmChannel = await bannee.createDM( true )
-            dmChannel.send( {
-                content: `Message from Practice Your Language:`, embeds: [
-                    new MessageEmbed()
-                        .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL( { size: 512 } ) } )
-                        .setColor( 'RED' )
-                        .setDescription( 'A message from PYL staff:' )
-                        .addField( 'Message:', 'You have been banned from PYL for breaking (a) server rule(s)' )
-                        .addField( 'Rule:', reason.rule )
-                        .addField( 'Dispute:', disputableReply )
-
-                ]
-            } ).then( () =>
+                await subCommand.execute( client, interaction )
+                return;
+            } catch ( e )
             {
-                interaction.editReply( { content: `${ bannee } has recieved the ban message.\nBanning now...` } )
-                bannee
-                    .ban( { days: time, reason: `${ interaction.user.tag } || ${ reason.reason }` } )
-                    .then(
-                        interaction.editReply( { content: `${ bannee } has been banned.` } )
-                    )
-                    .catch(
-                        ( rejectedReason ) =>
-                        {
-                            interaction.editReply( { content: `Something went wrong. Please contact Matrical ASAP.` } )
-                            console.log( rejectedReason )
-                        } )
-            } )
-        } catch ( e )
-        {
-
-            if ( e.code === 50007 )
-            {
-                await interaction.editReply( { content: `Cannot send messages to ${ bannee }\nBanning now...` } )
-                await bannee
-                    .ban( { days: time, reason: `${ reason.reason }` } )
-                    .then(
-                        interaction.editReply( { content: `${ bannee } has been banned.` } )
-                    )
-                    .catch(
-                        ( rejectedReason ) =>
-                        {
-                            interaction.editReply( { content: `Something went wrong. Please contact Matrical ASAP.` } )
-                            console.log( rejectedReason )
-                        } )
-            } else
-            {
+                await interaction.editReply( { content: 'There was an error. Please contact Matrical ASAP' } )
                 console.error( e )
             }
-
+        } else
+        {
+            await interaction.editReply( { content: `This sub-command doesn't exist as of now. I am working on it! :)` } )
         }
+        
+        return
     }
 }
