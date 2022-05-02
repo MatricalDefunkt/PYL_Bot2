@@ -46,13 +46,18 @@ module.exports = {
         const note = interaction.options.getString( 'note' )
 
         const infraction = new Infraction()
-        await infraction.addNote( interaction.user.id, userForNote.id, note ).then( resolved => console.log( resolved ) )
+        await infraction.addNote( interaction.user.id, userForNote.id, note )
         const caseId = infraction.note.getDataValue( 'caseID' );
         const type = infraction.note.getDataValue( 'type' );
         const target = `<@${ infraction.note.getDataValue( 'targetID' ) }>`;
         const mod = `<@${ infraction.note.getDataValue( 'modID' ) }>`;
         const reason = infraction.note.getDataValue( 'reason' );
         const time = `<t:${ Math.trunc( Date.parse( infraction.note.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
-        interaction.editReply( { content: `Case ID - ${ caseId }\nType - ${ type }\nTarget - ${ target }\nModerator - ${ mod }\nReason - ${ reason }\nTime - ${ time }` } )
+
+        const embed = new MessageEmbed()
+            .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
+            .setColor('YELLOW')
+            .setDescription(`*Case ID -* ${ caseId }\n*Type -* ${ type }\n*Target -* ${ target }\n*Moderator -* ${ mod }\n*Reason -* ${ reason }\n*Time -* ${ time }`)
+        interaction.editReply( {embeds: [embed]} )
     }
 }
