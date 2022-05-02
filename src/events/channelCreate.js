@@ -3,10 +3,32 @@
 require( "dotenv" ).config();
 const errChannelId = process.env.ERRCHANNELID;
 const errGuildId = process.env.ERRGUILDID;
-const { MessageEmbed, Permissions } = require( "discord.js" );
-const PermCalculator = require( "../utils/PermCalculator" );
+const { Embed } = require( "@discordjs/builders" );
+const { MessageEmbed, Permissions, Client, Channel, GuildChannel } = require( "discord.js" );
 
-const createWebhook = async ( channelForWebhook, client, channel, sendEmbed ) =>
+/**
+ * Converts any casing with spaces to Title Casing
+ * @param {String} str
+ */
+function toTitleCase ( str )
+{
+	return str.replace(
+		/\w\S*/g,
+		function ( txt )
+		{
+			return txt.charAt( 0 ).toUpperCase() + txt.substring( 1 ).toLowerCase();
+		}
+	);
+}
+
+/**
+ * Creates a webhook for a server changes logger, which logs even the channel which was just created.
+ * @param {GuildChannel} channelForWebhook 
+ * @param {Client} client 
+ * @param {GuildChannel} channel 
+ * @param {MessageEmbed} sendEmbed 
+ */
+async function createWebhook ( channelForWebhook, client, channel, sendEmbed )
 {
 	const serverWebhook = await channelForWebhook.createWebhook(
 		"PYL Server Logs",
@@ -31,10 +53,14 @@ const createWebhook = async ( channelForWebhook, client, channel, sendEmbed ) =>
 				content: `There was an error:\n\`\`\`js\n${ err }\`\`\``,
 			} );
 		} );
-};
+}
 
 module.exports = {
 	name: "channelCreate",
+	/**
+	 * @param {Client} client 
+	 * @param {GuildChannel} channel 
+	 */
 	async handle ( client, channel )
 	{
 		if ( channel.type === "GUILD_CATEGORY" ) return;
@@ -42,31 +68,35 @@ module.exports = {
 			await channel.guild.fetchAuditLogs( { type: 10, limit: 1 } )
 		).entries.at( 0 );
 
-		// const allowPerms = [];
-		// const denyPerms = [];
-		// for (const value of channel.permissionOverwrites.cache) {
-		// 	allowPerms.push({ id: value[0], bits: value[1].allow });
-		// 	denyPerms.push({ id: value[0], bits: value[1].deny });
-		// }
+		const allowPerms = [];
+		const denyPerms = [];
+		for ( const value of channel.permissionOverwrites.cache )
+		{
+			allowPerms.push( { id: value[ 0 ], bits: value[ 1 ].allow } );
+			denyPerms.push( { id: value[ 0 ], bits: value[ 1 ].deny } );
+		}
 
-		// console.log(allowPerms, denyPerms)
-		// let allowText;
-		// allowPerms.forEach(element => {
-		// 	console.log(element);
-		// 	console.log(((element.bits.bitfield == 0n)))
-		// 	if (element.bits.bitfield == 0n) return allowText = `<@&${element.id}>Default inheritence.`
+		let allowTextArray;
+		allowPerms.forEach( element =>
+		{
+			allowTextArray = element.bits.toArray()
+		} )
+		let denyTextArray;
+		denyPerms.forEach( element =>
+		{
+			console.log( element );
+			console.log( ( ( element.bits.bitfield == 0n ) ) )
+			denyTextArray = element.bits.toArray()
+		} )
 
-		// })
-		// let denyText;
-		// denyPerms.forEach(element => {
-		// 	console.log(element);
-		// 	console.log(((element.bits.bitfield == 0n)))
-		// 	if (element.bits.bitfield == 0n) return denyText = `<@&${element.id}>Default Inheritence`
+		let allowText = allowTextArray.join( ', ' ).replaceAll( '_', ' ' )
+		let denyText = denyTextArray.join( ', ' ).replaceAll( '_', ' ' )
 
 
-		// })
-		// console.log(allowText, denyText)
-		// return
+		allowText = toTitleCase( allowText )
+		denyText = toTitleCase( denyText );
+
+		console.log( allowText, denyText );
 
 		const sendEmbed = new MessageEmbed()
 			.setAuthor( {
@@ -82,6 +112,7 @@ module.exports = {
 				`\nID: ${ channel.id }\nPosition: ${ channel.rawPosition }\n`
 			)
 			.addField( "Creator:", `${ auditEntry.executor.toString() }` )
+			// .addFields()
 			.setColor( "DARK_BLUE" )
 			.setTimestamp();
 
