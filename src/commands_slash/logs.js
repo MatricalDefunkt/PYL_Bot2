@@ -27,6 +27,15 @@ module.exports = {
                 )
             )
             .addSubcommand( sc => sc
+                .setName( 'view_with_id' )
+                .setDescription( 'Brings the logs of the user with caseID, Mod, User and Type, using a user ID' )
+                .addStringOption( o => o
+                    .setName( 'target' )
+                    .setDescription( 'UserID to get the logs of.' )
+                    .setRequired( true )
+                )
+            )
+            .addSubcommand( sc => sc
                 .setName( 'count' )
                 .setDescription( 'Brings the counts of infractions, sorted on the type.' )
                 .addUserOption( o => o
@@ -78,5 +87,6 @@ module.exports = {
         {
             await interaction.editReply( { content: `This sub-command doesn't exist as of now. I am working on it! :)` } )
         }
+        return;
     }
 }
