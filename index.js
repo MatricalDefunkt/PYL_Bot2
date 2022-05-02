@@ -6,7 +6,7 @@ const path = require( 'path' )
 const fs = require( 'fs' );
 const { Op } = require( 'sequelize' );
 
-const client = new Client( { intents: 131071 } );
+const client = new Client( { intents: 131071, failIfNotExists: false } );
 
 const textCommandFiles = fs.readdirSync( path.join( __dirname, './src/commands_chat' ) ).filter( file => file.endsWith( '.js' ) );
 const slashCommandFiles = fs.readdirSync( path.join( __dirname, './src/commands_slash' ) ).filter( file => file.endsWith( '.js' ) );
