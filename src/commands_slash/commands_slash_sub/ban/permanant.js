@@ -1,5 +1,5 @@
 const { Client, CommandInteraction, MessageEmbed } = require( 'discord.js' );
-const Infraction = require( '../../../utils/infraction' );
+const Infraction = require( '../../../utils/Infraction.js' );
 const { rules } = require( '../../../utils/rules.json' );
 
 module.exports = {

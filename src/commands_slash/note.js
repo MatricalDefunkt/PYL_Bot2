@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require( '@discordjs/builders' )
 const { MessageEmbed, Client, CommandInteraction } = require( 'discord.js' );
-const Infraction = require( '../utils/infraction' );
+const Infraction = require( '../utils/Infraction.js' );
 
 module.exports = {
     data:

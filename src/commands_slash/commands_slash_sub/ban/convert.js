@@ -1,6 +1,7 @@
 const { Client, CommandInteraction, MessageActionRow, MessageButton } = require( 'discord.js' );
 const { tempBans } = require( '../../../database/database' );
 const { rules } = require( '../../../utils/rules.json' );
+const Infraction = require( '../../../utils/Infraction.js' );
 
 module.exports = {
     data: {
