@@ -1,9 +1,16 @@
 require( 'dotenv' ).config()
 const { Tags } = require( '../database/database' )
+const { Client, Message } = require( 'discord.js' );
 const tagprefix = process.env.TAGPREFIX;
 
 module.exports = {
     name: 'messageCreate',
+    /**
+     * 
+     * @param {Client} client 
+     * @param {Message} msg 
+     * @returns {Promise<void>}
+     */
     async handle ( client, msg )
     {
         {
@@ -37,16 +44,35 @@ module.exports = {
                     return;
                 }
 
-                switch ( tag.getDataValue( 'tagPerms' ) )
+                if ( msg.reference )
                 {
-                    case 0:
-                        return msg.channel.send( { content: `${ tag.getDataValue( 'tagReply' ) }` } ).then(msg.delete())
-                    case 1:
-                        if ( msg.member._roles.includes( '963537947255255092' ) ) { return msg.channel.send( { content: `${ tag.getDataValue( 'tagReply' ) }` } ) } else return msg.reply( { content: `Missing permissions` } ).then(msg.delete())
-                    case 2:
-                        if ( msg.member._roles.includes( '963537994596364288' ) ) { return msg.channel.send( { content: `${ tag.getDataValue( 'tagReply' ) }` } ) } else return msg.reply( { content: `Missing permissions` } ).then(msg.delete())
-                    default:
-                        return msg.reply( { content: `Tag permissions were incorrectly stored. Please contact Matrical ASAP.` } )
+                    const message = await msg.channel.messages.fetch( msg.reference.messageId, { force: false } )
+                    switch ( tag.getDataValue( 'tagPerms' ) )
+                    {
+                        case 0:
+                            return message.reply( { content: `${ tag.getDataValue( 'tagReply' ) }`, allowedMentions: { repliedUser: false } } ).then( msg.delete() )
+                        case 1:
+                            if ( msg.member._roles.includes( '963537947255255092' ) ) { return message.reply( { content: `${ tag.getDataValue( 'tagReply' ) }`, allowedMentions: { repliedUser: false } } ).then( msg.delete() ) } else return msg.reply( { content: `Missing permissions` } ).then( msg.delete() )
+                        case 2:
+                            if ( msg.member._roles.includes( '963537994596364288' ) ) { return message.reply( { content: `${ tag.getDataValue( 'tagReply' ) }`, allowedMentions: { repliedUser: false } } ).then( msg.delete() ) } else return msg.reply( { content: `Missing permissions` } ).then( msg.delete() )
+                        default:
+                            return msg.reply( { content: `Tag permissions were incorrectly stored. Please contact Matrical ASAP.` } )
+                    }
+
+                } else
+                {
+
+                    switch ( tag.getDataValue( 'tagPerms' ) )
+                    {
+                        case 0:
+                            return msg.channel.send( { content: `${ tag.getDataValue( 'tagReply' ) }` } ).then( msg.delete() )
+                        case 1:
+                            if ( msg.member._roles.includes( '963537947255255092' ) ) { return msg.channel.send( { content: `${ tag.getDataValue( 'tagReply' ) }` } ).then( msg.delete() ) } else return msg.reply( { content: `Missing permissions` } ).then( msg.delete() )
+                        case 2:
+                            if ( msg.member._roles.includes( '963537994596364288' ) ) { return msg.channel.send( { content: `${ tag.getDataValue( 'tagReply' ) }` } ).then( msg.delete() ) } else return msg.reply( { content: `Missing permissions` } ).then( msg.delete() )
+                        default:
+                            return msg.reply( { content: `Tag permissions were incorrectly stored. Please contact Matrical ASAP.` } )
+                    }
                 }
             }
         }
