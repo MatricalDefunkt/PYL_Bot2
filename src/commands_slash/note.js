@@ -57,7 +57,8 @@ module.exports = {
         const embed = new MessageEmbed()
             .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
             .setColor('YELLOW')
-            .setDescription(`*Case ID -* ${ caseId }\n*Type -* ${ type }\n*Target -* ${ target }\n*Moderator -* ${ mod }\n*Reason -* ${ reason }\n*Time -* ${ time }`)
-        interaction.editReply( {embeds: [embed]} )
+            .setDescription(`**Case ID -** ${ caseId }\n**Type -** ${ type }\n**Target -** ${ target }\n**Moderator -** ${ mod }\n**Reason -** ${ reason }\n**Time -** ${ time }`)
+        await interaction.editReply( {embeds: [embed]} )
+        return
     }
 }
