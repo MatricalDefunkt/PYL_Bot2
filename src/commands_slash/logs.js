@@ -42,6 +42,15 @@ module.exports = {
                     .setDescription( 'User to get the logs of.' )
                     .setRequired( true )
                 )
+            )
+            .addSubcommand( sc => sc
+                .setName( 'clear' )
+                .setDescription( 'Removes a log from the database using the case ID' )
+                .addStringOption( o => o
+                    .setName( 'caseid' )
+                    .setDescription( 'Case ID of the log you want to remove' )
+                    .setRequired( true ) 
+                ) 
             ),
     helpEmbed: new MessageEmbed()
         .setTitle( "Use of Logs" )
