@@ -1,7 +1,6 @@
-require( 'dotenv' ).config()
-const { Tags } = require( '../database/database' )
+const { Prefix, Tags } = require( '../database/database' );
+require( 'dotenv' ).config();
 const { Client, Message } = require( 'discord.js' );
-const tagprefix = process.env.TAGPREFIX;
 
 module.exports = {
     name: 'messageCreate',
@@ -13,6 +12,9 @@ module.exports = {
      */
     async handle ( client, msg )
     {
+
+        const tagprefix = client.prefixes.get('tag')
+
         {
 
             if ( !msg.guild ) return;

@@ -3,21 +3,10 @@ require( 'dotenv' ).config()
 const errChannelId = process.env.ERRCHANNELID;
 const errGuildId = process.env.ERRGUILDID;
 
-
 module.exports = {
   data: {
     name: "eval",
   },
-  helpEmbed: new MessageEmbed()
-    .setTitle( "Use of Eval" )
-    .setAuthor( {
-      name: "PYL Bot#9640",
-      iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
-    } )
-    .setColor( "GREEN" )
-    .setDescription(
-      `Syntax and use of 'eval' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   !!eval <code in javascript>\`\`\`\n\`\`\`\nUse:\nThe eval command accepts input in the form of a string. If the input is in the proper format, it runs the code as if it's javascript.\`\`\``
-    ),
   permissions: {
     ownerOnly: true,
     staffOnly: false,
@@ -26,9 +15,22 @@ module.exports = {
   async execute ( msg, client, args )
   {
 
+    const prefix = client.prefixes.get( 'command' )
+
+    const helpEmbed = new MessageEmbed()
+      .setTitle( "Use of Eval" )
+      .setAuthor( {
+        name: "PYL Bot#9640",
+        iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
+      } )
+      .setColor( "GREEN" )
+      .setDescription(
+        `Syntax and use of 'eval' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   ${ prefix }eval <code in javascript>\`\`\`\n\`\`\`\nUse:\nThe eval command accepts input in the form of a string. If the input is in the proper format, it runs the code as if it's javascript.\`\`\``
+      )
+
     if ( !args[ 0 ] )
     {
-      return msg.reply( { embeds: [ this.helpEmbed ] } ).then( msg => setTimeout( () =>
+      return msg.reply( { embeds: [ helpEmbed ] } ).then( msg => setTimeout( () =>
       {
         try
         {

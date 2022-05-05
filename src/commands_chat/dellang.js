@@ -1,19 +1,9 @@
-const { MessageEmbed, MessageCollector } = require( 'discord.js' )
+const { MessageEmbed, MessageCollector } = require( 'discord.js' );
 
 module.exports = {
   data: {
     name: "dellang",
   },
-  helpEmbed: new MessageEmbed()
-    .setTitle( "Use of NewLang" )
-    .setAuthor( {
-      name: "PYL Bot#9640",
-      iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
-    } )
-    .setColor( "GREEN" )
-    .setDescription(
-      `Syntax and use of 'newlang' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   !!newlang <name of new language>\`\`\`\n\`\`\`\nUse:\nNewLang helps in creating a new language category by making a new category, general chat, no-speaking text, and voice channel.\nOnce you've run the first command, that is !!newlang <name of language>, you will be asked for 3 inputs, namely the names of the three channels.\`\`\``
-    ),
   permissions: {
     ownerOnly: false,
     staffOnly: true,
@@ -22,9 +12,22 @@ module.exports = {
   async execute ( msg, client, args )
   {
 
+    const prefix = client.prefixes.get( 'command' )
+
+    const helpEmbed = new MessageEmbed()
+      .setTitle( "Use of NewLang" )
+      .setAuthor( {
+        name: "PYL Bot#9640",
+        iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
+      } )
+      .setColor( "GREEN" )
+      .setDescription(
+        `Syntax and use of 'newlang' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   ${ prefix }newlang <name of new language>\`\`\`\n\`\`\`\nUse:\nNewLang helps in creating a new language category by making a new category, general chat, no-speaking text, and voice channel.\nOnce you've run the first command, that is !!newlang <name of language>, you will be asked for 3 inputs, namely the names of the three channels.\`\`\``
+      )
+
     if ( !args[ 0 ] )
     {
-      return msg.reply( { embeds: [ this.helpEmbed ] } ).then( msg => setTimeout( () =>
+      return msg.reply( { embeds: [ helpEmbed ] } ).then( msg => setTimeout( () =>
       {
         try
         {

@@ -1,34 +1,41 @@
-require('dotenv').config();
-const prefix = process.env.PREFIX
-const fs = require('fs');
-const path = require('path');
+require( 'dotenv' ).config();
+const fs = require( 'fs' );
+const path = require( 'path' );
+const { Message, Client } = require( 'discord.js' );
 
 const names = []
 const textCommandFiles = fs.readdirSync( path.join( __dirname, '../commands_chat' ) ).filter( file => file.endsWith( '.js' ) );
 for ( const file of textCommandFiles )
 {
-	const textCommand = require( `../commands_chat/${ file }` );
-	names.push( textCommand.data.name )
+    const textCommand = require( `../commands_chat/${ file }` );
+    names.push( textCommand.data.name )
 }
 
 const autocorrect = require( 'autocorrect' )( { words: names } )
 
 module.exports = {
     name: 'messageCreate',
+    /**
+     * 
+     * @param {Client} client 
+     * @param {Message} msg 
+     * @returns 
+     */
     async handle ( client, msg ) 
     {
+
+        const prefix = client.prefixes.get('command')
 
         if ( !msg.guild ) return;
         if ( msg.author.bot ) return;
         if ( msg.content.startsWith( `${ prefix }` ) )
-
         {
 
             const args = msg.content.substring( `${ prefix.length }` ).split( ' ' )
             if ( autocorrect( args[ 0 ] ) != args[ 0 ] )
             {
                 const command = client.textCommands.get( autocorrect( args[ 0 ] ) )
-                
+
                 if ( command.permissions.ownerOnly === true && !msg.author.id == '714473790939332679' ) { return }
 
                 if ( command.permissions.staffOnly === true && !msg.member._roles.includes( '963537947255255092' ) ) { return }

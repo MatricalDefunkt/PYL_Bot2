@@ -1,20 +1,12 @@
 const { MessageEmbed } = require( 'discord.js' )
 const { Tags } = require( '../database/database' )
 
+
+
 module.exports = {
     data: {
         name: 'gettag',
     },
-    helpEmbed: new MessageEmbed()
-        .setTitle( "Use of GetTag" )
-        .setAuthor( {
-            name: "PYL Bot#9640",
-            iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
-        } )
-        .setColor( "GREEN" )
-        .setDescription(
-            `Syntax and use of 'gettag' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   !!gettag <all / tag-name>\`\`\`\n\`\`\`\nUse:\nThe gettag command replies to the command with either all the tags for PYL or, if given a name, data about that tag.\`\`\``
-        ),
     permissions: {
         ownerOnly: false,
         staffOnly: true,
@@ -23,9 +15,22 @@ module.exports = {
     async execute ( msg, client, args )
     {
 
+        const prefix = client.prefixes.get( 'command' )
+
+        const helpEmbed = new MessageEmbed()
+            .setTitle( "Use of GetTags" )
+            .setAuthor( {
+                name: "PYL Bot#9640",
+                iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
+            } )
+            .setColor( "GREEN" )
+            .setDescription(
+                `Syntax and use of 'gettags' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   ${ prefix }gettags <>\`\`\`\n\`\`\`\nUse:\nThe Gettags command replies with a rich embed containing all the tags, with authors and replies.\`\`\``
+        )
+
         if ( !args[ 0 ] )
         {
-            return msg.reply( { embeds: [ this.helpEmbed ] } ).then( msg => setTimeout( () =>
+            return msg.reply( { embeds: [ helpEmbed ] } ).then( msg => setTimeout( () =>
             {
                 try
                 {
@@ -69,13 +74,13 @@ module.exports = {
                 msg.reply( e )
             } finally
             {
-                const joinedReply = messageBuilder.join( ';;//..//;;//\n' )
+                const joinedReply = messageBuilder.join( ';][][\][,.\/][,.\/][\,./\,].\n' )
                 if ( joinedReply.length >= 2000 )
                 {
 
                 } else
                 {
-                    const finalReply = await joinedReply.replaceAll( ';;//..//;;//', '' )
+                    const finalReply = await joinedReply.replaceAll( ';][][\][,.\/][,.\/][\,./\,].', '' )
                     if ( !finalReply ) return msg.reply( { content: `No tags have been created yet. You can begin by typing \`<prefix>newtag\`!` } )
                     msg.reply( {
                         content: `Here are all the tags for PYL:`, embeds: [
