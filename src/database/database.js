@@ -43,10 +43,28 @@ const Infractions = sequelize.define( 'Infractions', {
     type: Sequelize.TEXT,
     targetID: Sequelize.TEXT,
     modID: Sequelize.TEXT,
-    reason: Sequelize.STRING
+    reason: Sequelize.STRING,
+    duration: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+    }
 }, {
     tableName: 'Infractions',
 } );
+
+const Prefix = sequelize.define( 'Prefix', {
+    type: {
+        type: Sequelize.TEXT,
+        unique: true,
+        primaryKey: true
+    },
+    prefix: {
+        type: Sequelize.TEXT,
+        unique: true
+    }
+}, {
+    tableName: 'Prefix',
+} )
 
 try
 {
@@ -55,12 +73,15 @@ try
         await Tags.sync();
         await tempBans.sync();
         await Infractions.sync();
+        await Prefix.sync();
     }
     sync()
+    
 } catch ( e )
 {
     console.error( e );
 }
 //TODO: Work on it lol
+// working on it 🙄
 
-module.exports = { Tags, tempBans, Infractions }
+module.exports = { Tags, tempBans, Infractions, Prefix }
