@@ -4,7 +4,7 @@ const { rules } = require( '../../../utils/rules.json' );
 
 module.exports = {
     data: {
-        name: '',
+        name: 'undo',
         parent: 'ban'
     },
     /**
@@ -15,7 +15,6 @@ module.exports = {
      */
     async execute ( client, interaction )
     {
-        await interaction.deferReply( { ephemeral: true } )
 
         const unbanId = interaction.options.getString( 'user-id' )
         if ( unbanId.length != 18 ) return interaction.editReply( { content: `Please enter a valid user ID` } )
@@ -24,11 +23,24 @@ module.exports = {
         interaction.guild.bans.fetch( unbanId ).then( unbanUser =>
         {
             interaction.editReply( { content: `Unbanning <@${ unbanId }>` } )
-            interaction.guild.bans.remove( unbanId, `${ interaction.user.tag } || ${ reason }` ).then( ( unbannedUser ) =>
+            interaction.guild.bans.remove( unbanId, `${ interaction.user.tag } || ${ reason }` ).then( async ( unbannedUser ) =>
             {
                 interaction.editReply( { content: `Unbanned ${ unbannedUser }.` } )
-                const unban = new Infraction()
-                unban.addUnBan(interaction.user.id, unbanId, reason)
+                const infraction = new Infraction()
+                await infraction.addUnBan( interaction.user.id, unbanUser.user.id, reason )
+                const dbcaseId = infraction.unban.getDataValue( 'caseID' );
+                const dbtype = infraction.unban.getDataValue( 'type' );
+                const dbtarget = `<@${ infraction.unban.getDataValue( 'targetID' ) }>`;
+                const dbmod = `<@${ infraction.unban.getDataValue( 'modID' ) }>`;
+                const dbreason = infraction.unban.getDataValue( 'reason' );
+                const dbtime = `<t:${ Math.trunc( Date.parse( infraction.unban.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
+
+                const embed = new MessageEmbed()
+                    .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
+                    .setColor( 'YELLOW' )
+                    .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
+                    .setFooter({iconURL: interaction.user.avatarURL(), text: interaction.user.tag})
+                    .setTimestamp()
                 return;
 
             } ).catch( ( err ) =>
@@ -41,7 +53,7 @@ module.exports = {
         } ).catch( ( err ) =>
         {
 
-            if ( err.code === 10026 ) return interaction.editReply( { content: `<@${ unbanId }> has not been banned.` } )
+            if ( err.code === 10026 ) return interaction.editReply( { content: `<@${ unbanId }> has not been banned in the first place.` } )
             interaction.editReply( { content: `There was an error. Please contact Matrical ASAP.` } )
             console.error( err );
 

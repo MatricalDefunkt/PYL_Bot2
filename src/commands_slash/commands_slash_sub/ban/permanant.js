@@ -87,8 +87,22 @@ module.exports = {
                     .then( async () =>
                     {
                         await interaction.editReply( { content: `${ bannee } has been banned.` } )
-                        const ban = new Infraction()
-                        ban.addBan( interaction.user.id, bannee.id, reason.reason )
+                        const infraction = new Infraction()
+                        await infraction.addBan( interaction.user.id, bannee.user.id, reason.reason )
+                        const dbcaseId = infraction.ban.getDataValue( 'caseID' );
+                        const dbtype = infraction.ban.getDataValue( 'type' );
+                        const dbtarget = `<@${ infraction.ban.getDataValue( 'targetID' ) }>`;
+                        const dbmod = `<@${ infraction.ban.getDataValue( 'modID' ) }>`;
+                        const dbreason = infraction.ban.getDataValue( 'reason' );
+                        const dbtime = `<t:${ Math.trunc( Date.parse( infraction.ban.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
+        
+                        const embed = new MessageEmbed()
+                            .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
+                            .setColor( 'YELLOW' )
+                            .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
+                            .setFooter({iconURL: interaction.user.avatarURL(), text: interaction.user.tag})
+                            .setTimestamp()
+                        await interaction.editReply( { embeds: [ embed ] } )
                     } )
                     .catch(
                         ( rejectedReason ) =>
@@ -108,8 +122,22 @@ module.exports = {
                     .then( async () =>
                     {
                         await interaction.editReply( { content: `${ bannee } has been banned.` } )
-                        const ban = new Infraction()
-                        ban.addBan( interaction.user.id, bannee.id, reason.reason )
+                        const infraction = new Infraction()
+                        await infraction.addBan( interaction.user.id, bannee.user.id, reason.reason )
+                        const dbcaseId = infraction.ban.getDataValue( 'caseID' );
+                        const dbtype = infraction.ban.getDataValue( 'type' );
+                        const dbtarget = `<@${ infraction.ban.getDataValue( 'targetID' ) }>`;
+                        const dbmod = `<@${ infraction.ban.getDataValue( 'modID' ) }>`;
+                        const dbreason = infraction.ban.getDataValue( 'reason' );
+                        const dbtime = `<t:${ Math.trunc( Date.parse( infraction.ban.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
+        
+                        const embed = new MessageEmbed()
+                            .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
+                            .setColor( 'YELLOW' )
+                            .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
+                            .setFooter({iconURL: interaction.user.avatarURL(), text: interaction.user.tag})
+                            .setTimestamp()
+                        await interaction.editReply( { embeds: [ embed ] } )
                     } )
                     .catch(
                         ( rejectedReason ) =>

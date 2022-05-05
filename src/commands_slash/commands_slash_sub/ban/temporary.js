@@ -171,13 +171,28 @@ module.exports = {
                             days: time,
                             reason: `${ interaction.user.tag } || ${ reason.reason }`,
                         } )
-                        .then( () =>
+                        .then( async () =>
                         {
-                            interaction.editReply( {
+                            await interaction.editReply( {
                                 content: `${ bannee } has been banned. They will be unbanned <t:${ durationTimestamp }:R>`,
                             } )
-                            const tempBan = new Infraction()
-                            tempBan.addTempBan(interaction.user.id, bannee.id, reason.reason)
+                            const infraction = new Infraction()
+                            await infraction.addTempBan( interaction.user.id, bannee.user.id, reason.reason, durationTimestamp )
+                            const dbcaseId = infraction.tempBan.getDataValue( 'caseID' );
+                            const dbtype = infraction.tempBan.getDataValue( 'type' );
+                            const dbtarget = `<@${ infraction.tempBan.getDataValue( 'targetID' ) }>`;
+                            const dbmod = `<@${ infraction.tempBan.getDataValue( 'modID' ) }>`;
+                            const dbreason = infraction.tempBan.getDataValue( 'reason' );
+                            const dbtime = `<t:${ Math.trunc( Date.parse( infraction.tempBan.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
+                            const dbduration = infraction.tempBan.getDataValue('duration')
+    
+                            const embed = new MessageEmbed()
+                                .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
+                                .setColor( 'YELLOW' )
+                                .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }\n**End-Time** - <t:${dbduration}:F>` )
+                                .setFooter( { iconURL: interaction.user.avatarURL(), text: interaction.user.tag } )
+                                .setTimestamp()
+                            await interaction.editReply( { embeds: [ embed ] } )
                         } )
                         .catch( ( rejectedReason ) =>
                         {
@@ -199,11 +214,29 @@ module.exports = {
                         days: time,
                         reason: `${ interaction.user.tag } || ${ reason.reason }`,
                     } )
-                    .then(
+                    .then( async () =>
+                    {
                         interaction.editReply( {
                             content: `${ bannee } has been banned. They will be unbanned <t:${ durationTimestamp }:R>`,
                         } )
-                    )
+                        const infraction = new Infraction()
+                        await infraction.addTempBan( interaction.user.id, bannee.user.id, reason.reason, durationTimestamp )
+                        const dbcaseId = infraction.tempBan.getDataValue( 'caseID' );
+                        const dbtype = infraction.tempBan.getDataValue( 'type' );
+                        const dbtarget = `<@${ infraction.tempBan.getDataValue( 'targetID' ) }>`;
+                        const dbmod = `<@${ infraction.tempBan.getDataValue( 'modID' ) }>`;
+                        const dbreason = infraction.tempBan.getDataValue( 'reason' );
+                        const dbtime = `<t:${ Math.trunc( Date.parse( infraction.tempBan.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
+                        const dbduration = infraction.tempBan.getDataValue('duration')
+
+                        const embed = new MessageEmbed()
+                            .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
+                            .setColor( 'YELLOW' )
+                            .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }\n**End-Time** - <t:${dbduration}:F>` )
+                            .setFooter( { iconURL: interaction.user.id, text: interaction.user.tag } )
+                            .setTimestamp()
+                        await interaction.editReply( { embeds: [ embed ] } )
+                    } )
                     .catch( ( rejectedReason ) =>
                     {
                         interaction.editReply( {
@@ -213,7 +246,8 @@ module.exports = {
                     } );
             } else if ( error.name === 'SequelizeUniqueConstraintError' )
             {
-                return interaction.editReply( { content: `${ bannee } already has a pending temp-ban.` } )
+                const oldBannee = await tempBans.findOne( { where: { userID: bannee.id } } )
+                return interaction.editReply( { content: `${ bannee } already has a pending temp-ban, ending <t:${ oldBannee.getDataValue( 'finishTimeStamp' ) }:R>, on <t:${ oldBannee.getDataValue( 'finishTimeStamp' ) }:F>.` } )
             } else
             {
                 console.error( e );

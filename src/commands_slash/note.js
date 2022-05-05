@@ -40,25 +40,26 @@ module.exports = {
      */
     async execute ( interaction, client )
     {
-
         await interaction.deferReply( { ephemeral: true } );
         const userForNote = interaction.options.getMember( 'user' );
         const note = interaction.options.getString( 'note' )
 
         const infraction = new Infraction()
         await infraction.addNote( interaction.user.id, userForNote.id, note )
-        const caseId = infraction.note.getDataValue( 'caseID' );
-        const type = infraction.note.getDataValue( 'type' );
-        const target = `<@${ infraction.note.getDataValue( 'targetID' ) }>`;
-        const mod = `<@${ infraction.note.getDataValue( 'modID' ) }>`;
-        const reason = infraction.note.getDataValue( 'reason' );
-        const time = `<t:${ Math.trunc( Date.parse( infraction.note.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
+        const dbcaseId = infraction.note.getDataValue( 'caseID' );
+        const dbtype = infraction.note.getDataValue( 'type' );
+        const dbtarget = `<@${ infraction.note.getDataValue( 'targetID' ) }>`;
+        const dbmod = `<@${ infraction.note.getDataValue( 'modID' ) }>`;
+        const dbreason = infraction.note.getDataValue( 'reason' );
+        const dbtime = `<t:${ Math.trunc( Date.parse( infraction.note.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
 
         const embed = new MessageEmbed()
             .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
-            .setColor('YELLOW')
-            .setDescription(`**Case ID -** ${ caseId }\n**Type -** ${ type }\n**Target -** ${ target }\n**Moderator -** ${ mod }\n**Reason -** ${ reason }\n**Time -** ${ time }`)
-        await interaction.editReply( {embeds: [embed]} )
+            .setColor( 'YELLOW' )
+            .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
+            .setFooter( { iconURL: interaction.user.avatarURL(), text: interaction.user.tag  } )
+            .setTimestamp()
+        await interaction.editReply( { embeds: [ embed ] } )
         return
     }
 }

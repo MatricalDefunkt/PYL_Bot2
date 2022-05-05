@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require( '@discordjs/builders' )
-const { MessageEmbed } = require( 'discord.js' )
+const { MessageEmbed, CommandInteraction, Client } = require( 'discord.js' );
+const Infraction = require( '../utils/Infraction' );
 const { rules } = require( '../utils/rules.json' )
 
 module.exports = {
@@ -14,7 +15,7 @@ module.exports = {
             )
             .addIntegerOption( o => o
                 .setName( 'reason' )
-                .setDescription( 'Reason for the Kick (Will appear in Audit Logs)' )
+                .setDescription( 'Reason for the kick (Will appear in Audit Logs)' )
                 .addChoices( [
                     [ 'Custom Reason', 0 ],
                     [ 'Gen Rule#1', 101 ],
@@ -54,6 +55,12 @@ module.exports = {
         staffOnly: true,
         adminOnly: false,
     },
+    /**
+     * 
+     * @param {CommandInteraction} interaction The interaction given by the API
+     * @param {Client} client Discord.JS client
+     * @returns {Promise<void>} Nothing, just an empty bleak, black, sparse, free from huaman, useless, 0 but also infinite, vast abyss full of nothingness.
+     */
     async execute ( interaction, client )
     {
 
@@ -109,9 +116,26 @@ module.exports = {
                 interaction.editReply( { content: `${ kickee } has recieved the kick message.\nKicking now...` } )
                 kickee
                     .kick( `${ interaction.user.tag } || ${ reason.reason }` )
-                    .then(
-                        interaction.editReply( { content: `${ kickee } has been kicked.` } )
-                    )
+                    .then( async () =>
+                    {
+                        await interaction.editReply( { content: `${ kickee } has been kicked.` } );
+                        const infraction = new Infraction()
+                        await infraction.addKick( interaction.user.id, kickee.user.id, reason.reason )
+                        const dbcaseId = infraction.kick.getDataValue( 'caseID' );
+                        const dbtype = infraction.kick.getDataValue( 'type' );
+                        const dbtarget = `<@${ infraction.kick.getDataValue( 'targetID' ) }>`;
+                        const dbmod = `<@${ infraction.kick.getDataValue( 'modID' ) }>`;
+                        const dbreason = infraction.kick.getDataValue( 'reason' );
+                        const dbtime = `<t:${ Math.trunc( Date.parse( infraction.kick.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
+        
+                        const embed = new MessageEmbed()
+                            .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
+                            .setColor( 'YELLOW' )
+                            .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
+                            .setFooter({iconURL: interaction.user.avatarURL(), text: interaction.user.tag})
+                            .setTimestamp()
+                        await interaction.editReply( { embeds: [ embed ] } )
+                    } )
                     .catch(
                         ( rejectedReason ) =>
                         {
@@ -121,15 +145,31 @@ module.exports = {
             } )
         } catch ( e )
         {
-
             if ( e.code === 50007 )
             {
                 await interaction.editReply( { content: `Cannot send messages to ${ kickee }\nKicking now...` } )
                 await kickee
                     .kick( reason.reason )
-                    .then(
+                    .then( async () =>
+                    {
                         interaction.editReply( { content: `${ kickee } has been kicked, but did not recieve the message.` } )
-                    )
+                        const infraction = new Infraction()
+                        await infraction.addKick( interaction.user.id, kickee.user.id, reason.reason )
+                        const dbcaseId = infraction.kick.getDataValue( 'caseID' );
+                        const dbtype = infraction.kick.getDataValue( 'type' );
+                        const dbtarget = `<@${ infraction.kick.getDataValue( 'targetID' ) }>`;
+                        const dbmod = `<@${ infraction.kick.getDataValue( 'modID' ) }>`;
+                        const dbreason = infraction.kick.getDataValue( 'reason' );
+                        const dbtime = `<t:${ Math.trunc( Date.parse( infraction.kick.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
+        
+                        const embed = new MessageEmbed()
+                            .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
+                            .setColor( 'YELLOW' )
+                            .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
+                            .setFooter({iconURL: interaction.user.avatarURL(), text: interaction.user.tag})
+                            .setTimestamp()
+                        await interaction.editReply( { embeds: [ embed ] } )
+                    } )
                     .catch(
                         ( rejectedReason ) =>
                         {
