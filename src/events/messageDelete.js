@@ -68,7 +68,7 @@ module.exports = {
 		const sendEmbed = new MessageEmbed()
 			.setAuthor( {
 				name:
-					msg.member.nickname === null
+					!msg.member
 						? msg.author.tag
 						: `${ msg.member.nickname } (${ msg.author.tag })`,
 				iconURL: msg.author.avatarURL(),
