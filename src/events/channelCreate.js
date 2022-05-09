@@ -79,6 +79,8 @@ module.exports = {
 		let allowTextArray;
 		allowPerms.forEach( element =>
 		{
+			console.log( element );
+			console.log( ( ( element.bits.bitfield == 0n ) ) )
 			allowTextArray = element.bits.toArray()
 		} )
 		let denyTextArray;
@@ -89,14 +91,12 @@ module.exports = {
 			denyTextArray = element.bits.toArray()
 		} )
 
-		let allowText = allowTextArray.join( ', ' ).replaceAll( '_', ' ' )
-		let denyText = denyTextArray.join( ', ' ).replaceAll( '_', ' ' )
+		let allowText = (allowTextArray) ? allowTextArray.join( ', ' ).replaceAll( '_', ' ' ) : `No overwrites specified.`
+		let denyText = (denyTextArray) ? denyTextArray.join( ', ' ).replaceAll( '_', ' ' ) : `No overwrites specified.`
 
 
 		allowText = toTitleCase( allowText )
 		denyText = toTitleCase( denyText );
-
-		console.log( allowText, denyText );
 
 		const sendEmbed = new MessageEmbed()
 			.setAuthor( {
