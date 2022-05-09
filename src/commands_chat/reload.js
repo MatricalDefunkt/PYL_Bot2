@@ -5,6 +5,11 @@ module.exports = {
     data: {
         name: 'reload',
     },
+    help: {
+        helpDescription: `Reloads the bot without having to log-in again.`,
+        helpSyntax: `reload`,
+        helpEmbed: false
+    },
     permissions: {
         ownerOnly: true,
         staffOnly: false,

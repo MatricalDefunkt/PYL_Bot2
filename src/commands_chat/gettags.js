@@ -7,6 +7,11 @@ module.exports = {
     data: {
         name: 'gettag',
     },
+    help: {
+        helpDescription: `The Gettags command replies with an embed containing all the tags, with authors and replies.`,
+        helpSyntax: `gettags <all / tagname>`,
+        helpEmbed: true
+    },
     permissions: {
         ownerOnly: false,
         staffOnly: true,

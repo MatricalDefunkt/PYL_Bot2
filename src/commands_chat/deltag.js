@@ -6,6 +6,11 @@ module.exports = {
     data: {
         name: 'deltag',
     },
+    help: {
+        helpDescription: `The deltags command deletes the provided tag.`,
+        helpSyntax: `deltag <tag-name>`,
+        helpEmbed: true
+    },
     permissions: {
         ownerOnly: false,
         staffOnly: true,
@@ -13,33 +18,6 @@ module.exports = {
     },
     async execute ( msg, client, args )
     {
-
-        const prefix = client.prefixes.get( 'command' )
-
-        const helpEmbed = new MessageEmbed()
-            .setTitle( "Use of DelTag" )
-            .setAuthor( {
-                name: "PYL Bot#9640",
-                iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
-            } )
-            .setColor( "GREEN" )
-            .setDescription(
-                `Syntax and use of 'deltag' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   ${ prefix }deltag <tag-name>\`\`\`\n\`\`\`\nUse:\nThe deltags command deletes the provided tag.\`\`\``
-            )
-
-        if ( !args[ 0 ] )
-        {
-            return msg.reply( { embeds: [ helpEmbed ] } ).then( msg => setTimeout( () =>
-            {
-                try
-                {
-                    msg.delete()
-                } catch ( err )
-                {
-                    console.error( err )
-                }
-            }, 30000 ) )
-        }
 
         const tag = await Tags.findOne( { where: { tagName: `${ args[ 0 ] }` } } );
 

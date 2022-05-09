@@ -1,8 +1,13 @@
-const { Permissions, MessageEmbed } = require( "discord.js" );
+const { Permissions } = require( "discord.js" );
 
 module.exports = {
   data: {
-    name: "newlang",
+    name: 'newlang',
+  },
+  help: {
+    helpDescription: `NewLang helps in creating a new language category by making a new category, general chat, no-speaking text, and voice channel.\nOnce you've run the first command, that is !!newlang <name of language>, you will be asked for 3 inputs, namely the names of the three channels.`,
+    helpSyntax: `newlang <name of new language>`,
+    helpEmbed: true
   },
   permissions: {
     ownerOnly: false,
@@ -11,33 +16,6 @@ module.exports = {
   },
   async execute ( msg, client, args )
   {
-
-    const prefix = client.prefixes.get('command')
-
-    const helpEmbed = new MessageEmbed()
-      .setTitle( "Use of NewLang" )
-      .setAuthor( {
-        name: "PYL Bot#9640",
-        iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
-      } )
-      .setColor( "GREEN" )
-      .setDescription(
-        `Syntax and use of 'newlang' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   ${prefix}newlang <name of new language>\`\`\`\n\`\`\`\nUse:\nNewLang helps in creating a new language category by making a new category, general chat, no-speaking text, and voice channel.\nOnce you've run the first command, that is !!newlang <name of language>, you will be asked for 3 inputs, namely the names of the three channels.\`\`\``
-    )
-
-    if ( !args[ 0 ] )
-    {
-      return msg.reply( { embeds: [ helpEmbed ] } ).then( msg => setTimeout( () =>
-      {
-        try
-        {
-          msg.delete()
-        } catch ( err )
-        {
-          console.error( err )
-        }
-      }, 30000 ) )
-    }
 
     reply = await msg.reply( { content: `Creating...` } );
 

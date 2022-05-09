@@ -5,6 +5,11 @@ module.exports = {
     data: {
         name: 'newtag',
     },
+    help: {
+        helpDescription: `The ping command replies with the roundtrip latency of the bot. Meaning, the time it takes for a bot to recieve a message subtracted from the time it takes to send a message, from, and to Discord.`,
+        helpSyntax: `ping`,
+        helpEmbed: true
+    },
     permissions: {
         ownerOnly: false,
         staffOnly: true,
@@ -13,22 +18,20 @@ module.exports = {
     async execute ( msg, client, args )
     {
 
-        const prefix = client.prefixes.get( 'command' )
-
         const helpEmbed = new MessageEmbed()
-            .setTitle( "Use of NewTag" )
+            .setTitle( `Use of ${ this.data.name }` )
             .setAuthor( {
                 name: "PYL Bot#9640",
                 iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
             } )
             .setColor( "GREEN" )
             .setDescription(
-                `Syntax and use of 'newtag' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   ${ prefix }newtag <new tag name> <admin-only / staff-only / everyone> <tag reply>\`\`\`\n\`\`\`\nUse:\nThe newtag command helps create a new tag for the bot. A tag is a custom command which has a custom reply. The first field is the one which defines the name of the tag. The second one determines if it is staff-only, or admin-only, or can be used by everyone. The last field is for the reply.\`\`\``
+                `Syntax and use of \`${ this.data.name }\` command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n${ client.prefixes.get( 'command' ) }${ this.help.helpSyntax }\`\`\`\n\`\`\`\nUse:\n${ this.help.helpDescription }\`\`\``
             )
 
-        if ( !args[ 0 ] )
+        if ( !args[ 1 ] || !args[ 2 ] )
         {
-            return msg.reply( { embeds: [ helpEmbed ] } ).then( msg => setTimeout( () =>
+            return msg.reply( { content: `\`\`\`diff\n- Invalid arguements.\`\`\``, embeds: [ helpEmbed ] } ).then( msg => setTimeout( () =>
             {
                 try
                 {
@@ -40,12 +43,7 @@ module.exports = {
             }, 30000 ) )
         }
 
-        if ( !args[ 1 ] || !args[ 2 ] )
-        {
-            return msg.reply( { content: `\`\`\`diff\n- Invalid arguements.\`\`\``, embeds: [ helpEmbed ] } )
-        }
-
-        if ( args[ 1 ].toLowerCase() != 'everyone' && args[ 1 ] != 'staff-only' && args[ 1 ] != 'admin-only' || !args[ 1 ] )
+        if ( args[ 1 ].toLowerCase() != 'everyone' && args[ 1 ] != 'staff-only' && args[ 1 ] != 'admin-only' )
         {
             return msg.reply(
                 {

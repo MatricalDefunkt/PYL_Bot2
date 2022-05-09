@@ -7,6 +7,11 @@ module.exports = {
   data: {
     name: "eval",
   },
+  help: {
+    helpDescrtiption: `The eval command accepts input in the form of a string. If the input is in the proper format, it runs the code as if it's javascript.`,
+    helpSyntax: `eval <code in javascript>`,
+    helpEmbed: true
+  },
   permissions: {
     ownerOnly: true,
     staffOnly: false,
@@ -14,34 +19,7 @@ module.exports = {
   },
   async execute ( msg, client, args )
   {
-
-    const prefix = client.prefixes.get( 'command' )
-
-    const helpEmbed = new MessageEmbed()
-      .setTitle( "Use of Eval" )
-      .setAuthor( {
-        name: "PYL Bot#9640",
-        iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
-      } )
-      .setColor( "GREEN" )
-      .setDescription(
-        `Syntax and use of 'eval' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   ${ prefix }eval <code in javascript>\`\`\`\n\`\`\`\nUse:\nThe eval command accepts input in the form of a string. If the input is in the proper format, it runs the code as if it's javascript.\`\`\``
-      )
-
-    if ( !args[ 0 ] )
-    {
-      return msg.reply( { embeds: [ helpEmbed ] } ).then( msg => setTimeout( () =>
-      {
-        try
-        {
-          msg.delete()
-        } catch ( err )
-        {
-          console.error( err )
-        }
-      }, 30000 ) )
-    }
-
+    
     const errGuild = await client.guilds.fetch( `${ errGuildId }` );
     const errChannel = await errGuild.channels.fetch( `${ errChannelId }` );
 
