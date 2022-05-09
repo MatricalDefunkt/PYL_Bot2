@@ -1,43 +1,28 @@
-const { MessageEmbed, MessageCollector } = require( 'discord.js' );
+const { Message, Client } = require( 'discord.js' );
 
 module.exports = {
   data: {
     name: "dellang",
+  },
+  help: {
+    helpDescription: `Dellang command helps you to delete a language using the channel category name.`,
+    helpSyntax: `dellang <name of new language>`,
+    helpEmbed: true
   },
   permissions: {
     ownerOnly: false,
     staffOnly: true,
     adminOnly: false,
   },
+  /**
+   * 
+   * @param {Message} msg 
+   * @param {Client} client 
+   * @param {Array<String>} args 
+   * @returns 
+   */
   async execute ( msg, client, args )
   {
-
-    const prefix = client.prefixes.get( 'command' )
-
-    const helpEmbed = new MessageEmbed()
-      .setTitle( "Use of NewLang" )
-      .setAuthor( {
-        name: "PYL Bot#9640",
-        iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
-      } )
-      .setColor( "GREEN" )
-      .setDescription(
-        `Syntax and use of 'newlang' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   ${ prefix }newlang <name of new language>\`\`\`\n\`\`\`\nUse:\nNewLang helps in creating a new language category by making a new category, general chat, no-speaking text, and voice channel.\nOnce you've run the first command, that is !!newlang <name of language>, you will be asked for 3 inputs, namely the names of the three channels.\`\`\``
-      )
-
-    if ( !args[ 0 ] )
-    {
-      return msg.reply( { embeds: [ helpEmbed ] } ).then( msg => setTimeout( () =>
-      {
-        try
-        {
-          msg.delete()
-        } catch ( err )
-        {
-          console.error( err )
-        }
-      }, 30000 ) )
-    }
 
     const category = await msg.guild.channels.cache.find(
       ( channel ) => channel.name.toLowerCase() === args[ 0 ].toLowerCase() && channel.type === 'GUILD_CATEGORY'
@@ -49,43 +34,35 @@ module.exports = {
 
     const filter = ( m ) => m.author === msg.author && m.content === args[ 0 ];
     const reply = await msg.reply( {
-      content: `Please repeat the name of the language you want to delete. The same name as before. Incorrect messages will be ignored.`,
+      content: `Please repeat the name of the language you want to delete, in under a minute. The same name as before. Incorrect messages will be ignored.`,
     } );
 
-    const collector = new MessageCollector( msg.channel, {
-      time: 10000,
+    reply.channel.awaitMessages( {
       filter: filter,
-    } );
-
-    collector.on( "collect", async ( collected ) =>
+      max: 1,
+      time: 60_000,
+      errors: [ 'time' ]
+    } ).then( captured =>
     {
-      collected.react( "👌" );
-      const channels = client.channels.cache.filter(
-        ( channel ) => channel.parentId === category.id
-      );
-
-      try
+      captured.first().react( '👌' ).catch( () => { } )
+      const channels = client.channels.cache.filter( channel => channel.parentId === category.id )
+      channels.forEach( async channel =>
       {
-        channels.forEach( ( channel ) =>
+        await channel.delete()
+      } )
+      category.delete()
+    } ).catch( ( reason ) =>
+    {
+      msg.reply( { content: `You did not reply in time. Please try again.` } ).then( ( message ) =>
+      {
+        setTimeout( () =>
         {
-          channel.delete();
-        } );
-      } finally
-      {
-        category.delete();
-        collector.stop( `Successful` );
-      }
-    } );
-    collector.on( 'end', async ( collected, reason ) =>
-    {
-      if ( reason != `Successful` )
-      {
-        reply.edit( { content: `There was an error, please contact Matrical ASAP.` } )
-        collected.delete()
-      } else
-      {
-        reply.edit( { content: `Deletion of \`${ args[ 0 ] }\` language category was successfully completed.` } )
-      }
+          msg.delete().catch( () => { } )
+          message.delete().catch( () => { } )
+          reply.delete().catch( () => { } )
+        }, 10_000 );
+      } )
     } )
+
   }
 }
