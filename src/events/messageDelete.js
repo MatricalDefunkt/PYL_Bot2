@@ -52,7 +52,7 @@ const getReply = async ( msgId, msg ) =>
 			content: `There was an error:\n\`\`\`js\n${ err }\`\`\``,
 		} )
 	} )
-	return ( reply ) ? reply.content + `\n\n[Jump to Reply](${reply.url})` : ( ( msg.channel.messages.cache.get( msgId ) ) ? msg.channel.messages.cache.get( msgId ).content + `\n\n[Jump to Reply](${msg.channel.messages.cache.get( msgId ).url})` : "Message was not found." )
+	return ( reply ) ? reply.content + `\n\n[Jump to Reply](${ reply.url })` : ( ( msg.channel.messages.cache.get( msgId ) ) ? msg.channel.messages.cache.get( msgId ).content + `\n\n[Jump to Reply](${ msg.channel.messages.cache.get( msgId ).url })` : "Message was not found." )
 }
 
 module.exports = {
@@ -68,7 +68,7 @@ module.exports = {
 		const sendEmbed = new MessageEmbed()
 			.setAuthor( {
 				name:
-					!msg.member
+					( !msg.member )
 						? msg.author.tag
 						: `${ msg.member.nickname } (${ msg.author.tag })`,
 				iconURL: msg.author.avatarURL(),
