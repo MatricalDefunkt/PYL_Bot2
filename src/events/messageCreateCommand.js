@@ -1,7 +1,7 @@
 require( 'dotenv' ).config();
 const fs = require( 'fs' );
 const path = require( 'path' );
-const { Message, Client } = require( 'discord.js' );
+const { Message, Client, MessageEmbed } = require( 'discord.js' );
 
 const names = []
 const textCommandFiles = fs.readdirSync( path.join( __dirname, '../commands_chat' ) ).filter( file => file.endsWith( '.js' ) );
@@ -24,7 +24,7 @@ module.exports = {
     async handle ( client, msg ) 
     {
 
-        const prefix = client.prefixes.get('command')
+        const prefix = client.prefixes.get( 'command' )
 
         if ( !msg.guild ) return;
         if ( msg.author.bot ) return;
@@ -42,8 +42,9 @@ module.exports = {
 
                 if ( command.permissions.adminOnly === true && !msg.member._roles.includes( '963537994596364288' ) ) { return }
 
-                return msg.author.send( { content: `Did you mean \`${ autocorrect( args[ 0 ] ) }\`?` } )
+                return msg.author.send( { content: `Did you mean \`${ autocorrect( args[ 0 ] ) }\`?` } ).catch( () => { } )
             }
+            
             const command = client.textCommands.get( args[ 0 ].toLowerCase() )
 
             if ( !command ) { return } else
@@ -56,6 +57,32 @@ module.exports = {
                 if ( command.permissions.adminOnly === true && !msg.member._roles.includes( '963537994596364288' ) ) { return }
 
                 args.shift()
+
+                if ( command.help.helpEmbed === true && args.length === 0 )
+                {
+
+                    const helpEmbed = new MessageEmbed()
+                        .setTitle( `Use of ${ command.data.name }` )
+                        .setAuthor( {
+                            name: "PYL Bot#9640",
+                            iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
+                        } )
+                        .setColor( "GREEN" )
+                        .setDescription(
+                            `Syntax and use of \`${ command.data.name }\` command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n${ prefix }${ command.help.helpSyntax }\`\`\`\n\`\`\`\nUse:\n${ command.help.helpDescription }\`\`\``
+                        )
+
+                    return msg.reply( { embeds: [ helpEmbed ] } ).then( msg => setTimeout( () =>
+                    {
+                        try
+                        {
+                            msg.delete()
+                        } catch ( err )
+                        {
+                            console.error( err )
+                        }
+                    }, 30000 ) )
+                }
 
                 try
                 {
