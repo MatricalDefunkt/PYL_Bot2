@@ -21,8 +21,8 @@ module.exports = {
             if ( msg.author.bot ) return;
             if ( msg.content.startsWith( `${ tagprefix }` ) )
             {
-
-                if ( msg.content.length <= 2 )
+                const content = msg.content
+                if ( content.replace(tagprefix, '').length <= tagprefix.length )
                 {
                     const reply = await msg.reply( { content: `Please provide a tag` } );
                     msg.delete()
@@ -33,11 +33,11 @@ module.exports = {
                     return;
                 }
 
-                const tag = await Tags.findOne( { where: { tagName: `${ msg.content.slice( 2 ) }` } } );
+                const tag = await Tags.findOne( { where: { tagName: `${ msg.content.slice( tagprefix.length ) }` } } );
 
                 if ( !tag )
                 {
-                    const reply = await msg.reply( { content: `Tag \`${ msg.content.slice( 2 ) }\` was not found.` } );
+                    const reply = await msg.reply( { content: `Tag \`${ msg.content.slice( tagprefix.length ) }\` was not found.` } );
                     msg.delete()
                     setTimeout( () =>
                     {
