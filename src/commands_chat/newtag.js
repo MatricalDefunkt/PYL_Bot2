@@ -6,8 +6,8 @@ module.exports = {
         name: 'newtag',
     },
     help: {
-        helpDescription: `The ping command replies with the roundtrip latency of the bot. Meaning, the time it takes for a bot to recieve a message subtracted from the time it takes to send a message, from, and to Discord.`,
-        helpSyntax: `ping`,
+        helpDescription: `The newtag command creates a new tag, storing the permissions, name and reply in a database which you can use anytime you need it, for texts which need to be sent frequently.`,
+        helpSyntax: `newtag <name> <everyone / staff-only / admin-only> <reply>`,
         helpEmbed: true
     },
     permissions: {
