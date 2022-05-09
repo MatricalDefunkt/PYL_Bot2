@@ -127,12 +127,12 @@ module.exports = {
                         const dbmod = `<@${ infraction.kick.getDataValue( 'modID' ) }>`;
                         const dbreason = infraction.kick.getDataValue( 'reason' );
                         const dbtime = `<t:${ Math.trunc( Date.parse( infraction.kick.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
-        
+
                         const embed = new MessageEmbed()
                             .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
                             .setColor( 'YELLOW' )
                             .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
-                            .setFooter({iconURL: interaction.user.avatarURL(), text: interaction.user.tag})
+                            .setFooter( { iconURL: interaction.user.avatarURL(), text: interaction.user.tag } )
                             .setTimestamp()
                         await interaction.editReply( { embeds: [ embed ] } )
                     } )
@@ -161,12 +161,12 @@ module.exports = {
                         const dbmod = `<@${ infraction.kick.getDataValue( 'modID' ) }>`;
                         const dbreason = infraction.kick.getDataValue( 'reason' );
                         const dbtime = `<t:${ Math.trunc( Date.parse( infraction.kick.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
-        
+
                         const embed = new MessageEmbed()
                             .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
                             .setColor( 'YELLOW' )
                             .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
-                            .setFooter({iconURL: interaction.user.avatarURL(), text: interaction.user.tag})
+                            .setFooter( { iconURL: interaction.user.avatarURL(), text: interaction.user.tag } )
                             .setTimestamp()
                         await interaction.editReply( { embeds: [ embed ] } )
                     } )
