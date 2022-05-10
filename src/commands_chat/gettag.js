@@ -1,7 +1,5 @@
-const { MessageEmbed } = require( 'discord.js' )
+const { MessageEmbed, MessageActionRow, MessageButton, Message, Client, InteractionCollector } = require( 'discord.js' )
 const { Tags } = require( '../database/database' )
-
-
 
 module.exports = {
     data: {
@@ -17,6 +15,13 @@ module.exports = {
         staffOnly: true,
         adminOnly: false,
     },
+    /**
+     * 
+     * @param {Message} msg 
+     * @param {Client} client 
+     * @param {Array<String>} args 
+     * @returns {void}
+     */
     async execute ( msg, client, args )
     {
 
@@ -38,13 +43,27 @@ module.exports = {
         if ( args[ 0 ].toLowerCase() === 'all' )
         {
 
-            const tags = await Tags.findAll()
+            const row = new MessageActionRow()
+                .addComponents( [
+                    new MessageButton()
+                        .setCustomId( 'previous' )
+                        .setStyle( 'SECONDARY' )
+                        .setEmoji( '◀️' ),
+                    new MessageButton()
+                        .setCustomId( 'next' )
+                        .setStyle( 'SECONDARY' )
+                        .setEmoji( '▶️' )
+                ] )
+
+            let counter = 0
+            const tags = await Tags.findAll( { limit: counter + 5, offset: counter } )
             const messageBuilder = [];
             try
             {
                 tags.forEach( tag =>
                 {
-                    messageBuilder.push( `\`\`\`Name: ${ tag.getDataValue( 'tagName' ) }\n\nReply: ${ tag.getDataValue( 'tagReply' ) }\n\nPermission Level: ${ permissionHandle( tag.getDataValue( 'tagPerms' ) ) }\n\`\`\`Author: <@${ tag.getDataValue( 'tagAuthor' ) }>` )
+                    const reply = ( tag.getDataValue( 'tagReply' ).length >= 100 ) ? tag.getDataValue( 'tagReply' ).slice( 0, 96 ) + '...' : tag.getDataValue( 'tagReply' )
+                    messageBuilder.push( `\`\`\`Name: ${ tag.getDataValue( 'tagName' ) }\n\nReply: ${ reply }\n\nPermission Level: ${ permissionHandle( tag.getDataValue( 'tagPerms' ) ) }\n\`\`\`Author: <@${ tag.getDataValue( 'tagAuthor' ) }>` )
                 } );
             } catch ( e )
             {
@@ -52,22 +71,22 @@ module.exports = {
                 msg.reply( e )
             } finally
             {
-                const joinedReply = messageBuilder.join( ';][][\][,.\/][,.\/][\,./\,].\n' )
-                if ( joinedReply.length >= 2000 )
-                {
+                const joinedReply = messageBuilder.join( ';][][\][,.\/][,.\/][\,./\,].\n\n' )
 
-                } else
-                {
-                    const finalReply = await joinedReply.replaceAll( ';][][\][,.\/][,.\/][\,./\,].', '' )
-                    if ( !finalReply ) return msg.reply( { content: `No tags have been created yet. You can begin by typing \`${ client.prefixes.get( 'command' ) }newtag\`!` } )
-                    msg.reply( {
-                        content: `Here are all the tags for PYL:`, embeds: [
-                            new MessageEmbed()
-                                .setTitle( 'All PYL tags' )
-                                .setDescription( finalReply )
-                        ]
-                    } )
-                }
+                const finalReplyText = await joinedReply.replaceAll( ';][][\][,.\/][,.\/][\,./\,].', '' )
+                if ( !finalReplyText ) return msg.reply( { content: `No tags have been created yet. You can begin by typing \`${ client.prefixes.get( 'command' ) }newtag\`!` } )
+                const reply = msg.reply( {
+                    content: `Here are all the tags for PYL:`, embeds: [
+                        new MessageEmbed()
+                            .setTitle( 'All PYL tags' )
+                            .setDescription( finalReplyText )
+                    ],
+                    components: [ row ]
+                } )
+
+                const filter = (interaction) => interaction.user === msg.author.id
+                const collector = new InteractionCollector(client, {componentType: 'BUTTON', message: reply, filter: filter, interactionType: 'MESSAGE_COMPONENT'})
+
             }
 
         } else
