@@ -36,6 +36,7 @@ module.exports = {
                 .setDescription( 'The prefix to set to, if you wish to change it.' )
             ),
     help: {
+        helpName: 'Prefix',
         helpDescription: `The prefix command replies with, or allowes you to change the prefix for the bot for its slash commands.`,
         helpSyntax: `prefix <type> <action> [prefix]`,
         helpEmbed: true

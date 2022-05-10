@@ -5,6 +5,7 @@ module.exports = {
     name: "dellang",
   },
   help: {
+    helpName: 'Delete Language',
     helpDescription: `Dellang command helps you to delete a language using the channel category name.`,
     helpSyntax: `dellang <name of new language>`,
     helpEmbed: true

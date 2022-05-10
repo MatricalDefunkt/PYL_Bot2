@@ -5,6 +5,7 @@ module.exports = {
     name: "ping",
   },
   help: {
+    helpName: 'Ping',
     helpDescription: `The ping command replies with the roundtrip latency of the , as well as the websocket ping, meaning, the time it takes for a bot to recieve a message subtracted from the time it takes to send a message, from, and to Discord.`,
     helpSyntax: `ping`,
     helpEmbed: false

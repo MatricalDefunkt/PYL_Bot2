@@ -13,6 +13,7 @@ module.exports = {
                 .setRequired( true )
             ),
     help: {
+        helpName: 'Halp',
         helpDescription: `No. Go. Go get some help. This is not help. WHY oh WHY did you think that this is a good idea??????`,
         helpSyntax: `ban\nIm gonna ban you. :(`,
         helpEmbed: false
@@ -77,7 +78,7 @@ module.exports = {
 
         commands.forEach( command =>
         {
-            responses.push( { name: command[ 0 ], value: command[ 0 ] } )
+            responses.push( { name: command[ 1 ].help.helpName, value: command[ 0 ] } )
             commandNameValues.push( command[ 0 ] )
         } )
 

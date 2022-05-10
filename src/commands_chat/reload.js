@@ -6,6 +6,7 @@ module.exports = {
         name: 'reload',
     },
     help: {
+        helpName: 'Reload',
         helpDescription: `Reloads the bot without having to log-in again.`,
         helpSyntax: `reload`,
         helpEmbed: false

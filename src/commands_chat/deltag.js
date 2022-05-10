@@ -7,6 +7,7 @@ module.exports = {
         name: 'deltag',
     },
     help: {
+        helpName: 'Delete Tag',
         helpDescription: `The deltags command deletes the provided tag.`,
         helpSyntax: `deltag <tag-name>`,
         helpEmbed: true

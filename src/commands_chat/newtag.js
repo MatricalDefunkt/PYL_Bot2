@@ -6,6 +6,7 @@ module.exports = {
         name: 'newtag',
     },
     help: {
+        helpName: 'New Tag',
         helpDescription: `The newtag command creates a new tag, storing the permissions, name and reply in a database which you can use anytime you need it, for texts which need to be sent frequently.`,
         helpSyntax: `newtag <name> <everyone / staff-only / admin-only> <reply>`,
         helpEmbed: true

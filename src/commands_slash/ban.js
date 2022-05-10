@@ -165,6 +165,7 @@ module.exports = {
                 )
             ),
     help: {
+        helpName: 'Ban',
         helpDescription: `The ban command has multiple sub commands.\nConvert => Work in Progress. Will allow you to convert bans into temporary bans and vice-versa.\nPermanant => Permanantly bans a user from the server.\nTemporary => Temporarily bans a user from the server.\nUndo => Unbans a user using the userID.`,
         helpSyntax: `ban <type-of-action> <arguements>`,
         helpEmbed: false

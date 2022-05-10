@@ -3,9 +3,10 @@ const { Tags } = require( '../database/database' )
 
 module.exports = {
     data: {
-        name: 'gettag',
+        name: 'gettags',
     },
     help: {
+        helpName: 'Get tags',
         helpDescription: `The Gettags command replies with an embed containing all the tags, with authors and replies.`,
         helpSyntax: `gettag <all / tagname>`,
         helpEmbed: true

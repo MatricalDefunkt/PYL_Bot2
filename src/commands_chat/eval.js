@@ -8,6 +8,7 @@ module.exports = {
     name: "eval",
   },
   help: {
+    helpName: 'Evaluate',
     helpDescrtiption: `The eval command accepts input in the form of a string. If the input is in the proper format, it runs the code as if it's javascript.`,
     helpSyntax: `eval <code in javascript>`,
     helpEmbed: true

@@ -51,6 +51,7 @@ module.exports = {
             `Syntax and use of 'Kick' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   /kick <user> <reason> [custom-reason]\`\`\`\n\`\`\`\nUse:\nThe kick command kicks the provided user, sending them a DM with the reason, while logging the same reason in the audit logs.\`\`\``
         ),
     help: {
+        helpName: 'Kick',
         helpDescription: `The kick command kicks the provided user, sending them a DM with the reason.`,
         helpSyntax: `kick <user> <reason>`,
         helpEmbed: false

@@ -5,6 +5,7 @@ module.exports = {
     name: 'newlang',
   },
   help: {
+    helpName: 'New Language',
     helpDescription: `NewLang helps in creating a new language category by making a new category, general chat, no-speaking text, and voice channel.\nOnce you've run the first command, that is !!newlang <name of language>, you will be asked for 3 inputs, namely the names of the three channels.`,
     helpSyntax: `newlang <name of new language>`,
     helpEmbed: true

@@ -18,6 +18,7 @@ module.exports = {
                 .setRequired( true )
             ),
     help: {
+        helpName: 'Note',
         helpDescription: `The note command adds a note onto a user and stores it. You can retrieve a note by performing /logs on the user.`,
         helpSyntax: `note <user> <note>`,
         helpEmbed: true

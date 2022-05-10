@@ -41,6 +41,7 @@ module.exports = {
                 .setDescription( 'Please type the custom reason for the warn if you have chosen "Custom Reason" under \'Reason\'' )
             ),
     help: {
+        helpName: 'Warn',
         helpDescription: `The warn command warns a user of this server, sending them a DM about the same, as well as storing the infraction in a database for later reference.`,
         helpSyntax: `kick <user> <reason> [custom-reason]`,
         helpEmbed: true

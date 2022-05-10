@@ -53,6 +53,7 @@ module.exports = {
                 )
             ),
     help: {
+        helpName: 'Logs',
         helpDescription: `The logs command has multiple sub commands.\nClear => Clears an infraction from the database using the caseID\nCount => Counts the number of infractions for given user.\nView => Brings all the infractions stored for the given user.\nView With ID => Brings all infractions stored for a user with the given ID.`,
         helpSyntax: `logs <type-of-action> <arguements>`,
         helpEmbed: false

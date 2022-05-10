@@ -3,6 +3,7 @@ module.exports = {
         name: 'massping',
     },
     help: {
+        helpName: 'Mass Ping',
         helpDescription: `The massping command ghost-pings the mentioned user 5 times.`,
         helpSyntax: `massping <user>`,
         helpEmbed: true
