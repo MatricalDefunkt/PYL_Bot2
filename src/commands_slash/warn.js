@@ -40,16 +40,11 @@ module.exports = {
                 .setName( 'custom-reason' )
                 .setDescription( 'Please type the custom reason for the warn if you have chosen "Custom Reason" under \'Reason\'' )
             ),
-    helpEmbed: new MessageEmbed()
-        .setTitle( "Use of Warn" )
-        .setAuthor( {
-            name: "PYL Bot#9640",
-            iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
-        } )
-        .setColor( "GREEN" )
-        .setDescription(
-            `Syntax and use of 'Warn' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   /warn <user> <reason> [custom-reason]\`\`\`\n\`\`\`\nUse:\nThe warn command adds a warn onto a user and stores it, optionally sending a DM about the same to the user.\`\`\``
-        ),
+    help: {
+        helpDescription: `The warn command warns a user of this server, sending them a DM about the same, as well as storing the infraction in a database for later reference.`,
+        helpSyntax: `kick <user> <reason> [custom-reason]`,
+        helpEmbed: true
+    },
     permissions: {
         ownerOnly: false,
         staffOnly: true,
@@ -63,8 +58,6 @@ module.exports = {
      */
     async execute ( interaction, client )
     {
-
-        console.log('here')
 
         await interaction.deferReply( { ephemeral: true } );
         const userForWarn = interaction.options.getMember( 'user' );
@@ -92,40 +85,36 @@ module.exports = {
         {
             reason = getRule( _reason )
         }
-
-        try
+        const dmChannel = await userForWarn.createDM( true )
+        dmChannel.send( {
+            content: `Message from Practice Your Language:`, embeds: [
+                new MessageEmbed()
+                    .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL( { size: 512 } ) } )
+                    .setColor( 'RED' )
+                    .setDescription( 'A message from PYL staff:' )
+                    .addField( 'Message:', 'You have been warned in PYL for breaking (a) server rule(s)' )
+                    .addField( 'Rule:', reason.rule )
+            ]
+        } ).then( async () =>
         {
-            const dmChannel = await userForWarn.createDM( true )
-            dmChannel.send( {
-                content: `Message from Practice Your Language:`, embeds: [
-                    new MessageEmbed()
-                        .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL( { size: 512 } ) } )
-                        .setColor( 'RED' )
-                        .setDescription( 'A message from PYL staff:' )
-                        .addField( 'Message:', 'You have been warned in PYL for breaking (a) server rule(s)' )
-                        .addField( 'Rule:', reason.rule )
-                ]
-            } ).then( async () =>
-            {
-                interaction.editReply( { content: `${ userForWarn } has recieved the warn message.\nSaving now...` } )
-                const infraction = new Infraction()
-                await infraction.addWarn( interaction.user.id, userForWarn.user.id, reason.reason )
-                const dbcaseId = infraction.warn.getDataValue( 'caseID' );
-                const dbtype = infraction.warn.getDataValue( 'type' );
-                const dbtarget = `<@${ infraction.warn.getDataValue( 'targetID' ) }>`;
-                const dbmod = `<@${ infraction.warn.getDataValue( 'modID' ) }>`;
-                const dbreason = infraction.warn.getDataValue( 'reason' );
-                const dbtime = `<t:${ Math.trunc( Date.parse( infraction.warn.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
+            interaction.editReply( { content: `${ userForWarn } has recieved the warn message.\nSaving now...` } )
+            const infraction = new Infraction()
+            await infraction.addWarn( interaction.user.id, userForWarn.user.id, reason.reason )
+            const dbcaseId = infraction.warn.getDataValue( 'caseID' );
+            const dbtype = infraction.warn.getDataValue( 'type' );
+            const dbtarget = `<@${ infraction.warn.getDataValue( 'targetID' ) }>`;
+            const dbmod = `<@${ infraction.warn.getDataValue( 'modID' ) }>`;
+            const dbreason = infraction.warn.getDataValue( 'reason' );
+            const dbtime = `<t:${ Math.trunc( Date.parse( infraction.warn.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
 
-                const embed = new MessageEmbed()
-                    .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
-                    .setColor( 'YELLOW' )
-                    .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
-                    .setFooter( { iconURL: interaction.user.avatarURL(), text: interaction.user.tag } )
-                    .setTimestamp()
-                await interaction.editReply( { embeds: [ embed ] } )
-            } )
-        } catch ( e )
+            const embed = new MessageEmbed()
+                .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
+                .setColor( 'YELLOW' )
+                .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
+                .setFooter( { iconURL: interaction.user.avatarURL(), text: interaction.user.tag } )
+                .setTimestamp()
+            await interaction.editReply( { embeds: [ embed ] } )
+        } ).catch( ( e ) =>
         {
             if ( e.code === 50007 )
             {
@@ -143,12 +132,12 @@ module.exports = {
                         const dbtime = `<t:${ Math.trunc( Date.parse( infraction.warn.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
 
                         const embed = new MessageEmbed()
-                        .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
-                        .setColor( 'YELLOW' )
-                        .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
-                        .setFooter( { iconURL: interaction.user.avatarURL(), text: interaction.user.tag } )
-                        .setTimestamp()
-                    await interaction.editReply( { embeds: [ embed ] } )
+                            .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
+                            .setColor( 'YELLOW' )
+                            .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
+                            .setFooter( { iconURL: interaction.user.avatarURL(), text: interaction.user.tag } )
+                            .setTimestamp()
+                        await interaction.editReply( { embeds: [ embed ] } )
                     } )
                     .catch(
                         ( rejectedReason ) =>
@@ -159,7 +148,8 @@ module.exports = {
             } else
             {
                 console.error( e )
+                interaction.editReply( { content: `There was an error. Please contact Matrical ASAP.` } )
             }
-        }
+        } )
     }
 }

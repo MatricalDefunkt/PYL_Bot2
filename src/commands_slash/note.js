@@ -17,16 +17,11 @@ module.exports = {
                 .setDescription( 'The note you would like to add onto the user.' )
                 .setRequired( true )
             ),
-    helpEmbed: new MessageEmbed()
-        .setTitle( "Use of Note" )
-        .setAuthor( {
-            name: "PYL Bot#9640",
-            iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
-        } )
-        .setColor( "GREEN" )
-        .setDescription(
-            `Syntax and use of 'Note' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   /note <user> <note>\`\`\`\n\`\`\`\nUse:\nThe note command adds a note onto a user and stores it. You can retrieve a note by performing /logs on the user.\`\`\``
-        ),
+    help: {
+        helpDescription: `The note command adds a note onto a user and stores it. You can retrieve a note by performing /logs on the user.`,
+        helpSyntax: `note <user> <note>`,
+        helpEmbed: true
+    },
     permissions: {
         ownerOnly: false,
         staffOnly: true,
@@ -57,7 +52,7 @@ module.exports = {
             .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
             .setColor( 'YELLOW' )
             .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
-            .setFooter( { iconURL: interaction.user.avatarURL(), text: interaction.user.tag  } )
+            .setFooter( { iconURL: interaction.user.avatarURL(), text: interaction.user.tag } )
             .setTimestamp()
         await interaction.editReply( { embeds: [ embed ] } )
         return

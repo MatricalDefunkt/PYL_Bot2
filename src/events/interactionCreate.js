@@ -1,9 +1,16 @@
+const { CommandInteraction, ButtonInteraction, SelectMenuInteraction, AutocompleteInteraction } = require( "discord.js" )
+
 module.exports = {
     name: 'interactionCreate',
+    /**
+     * 
+     * @param {Client} client The bot client.
+     * @param {CommandInteraction | ButtonInteraction | SelectMenuInteraction | AutocompleteInteraction} interaction The interaction recieved by the end-point.
+     * @returns 
+     */
     async handle ( client, interaction )
     {
-
-        if ( !interaction.guild.id ) { return };
+        if ( !interaction.guild ) { return };
         if ( interaction.isCommand() )
         {
             const command = client.slashCommands.get( interaction.commandName )
@@ -27,11 +34,16 @@ module.exports = {
             } catch ( error )
             {
 
-                console.error(error);
+                console.error( error );
 
                 interaction.channel.send( { content: 'There was an error. Please contact Matrical ASAP', ephemeral: true } )
 
             }
+        }
+        if ( interaction.isAutocomplete() )
+        {
+            const autoCompleteCommand = client.slashCommands.get( interaction.commandName )
+            autoCompleteCommand.respond( interaction, client )
         }
     }
 }

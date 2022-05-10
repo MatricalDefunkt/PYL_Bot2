@@ -12,6 +12,8 @@ const textCommandFiles = fs.readdirSync( path.join( __dirname, './src/commands_c
 const slashCommandFiles = fs.readdirSync( path.join( __dirname, './src/commands_slash' ) ).filter( file => file.endsWith( '.js' ) );
 const eventFiles = fs.readdirSync( path.join( __dirname, './src/events' ) ).filter( file => file.endsWith( 'js' ) )
 
+const allCommands = new Collection();
+
 client.textCommands = new Collection();
 const names = []
 
@@ -20,6 +22,7 @@ for ( const file of textCommandFiles )
 	const textCommand = require( `./src/commands_chat/${ file }` );
 	names.push( textCommand.data.name )
 	client.textCommands.set( textCommand.data.name, textCommand );
+	allCommands.set( textCommand.data.name, textCommand );
 }
 
 client.slashCommands = new Collection();
@@ -28,6 +31,7 @@ for ( const file of slashCommandFiles )
 {
 	const slashCommand = require( `./src/commands_slash/${ file }` );
 	client.slashCommands.set( slashCommand.data.name, slashCommand );
+	allCommands.set( slashCommand.data.name, slashCommand );
 }
 
 client.prefixes = new Collection();
@@ -116,3 +120,7 @@ setInterval( async () =>
 }, 600000 );
 
 client.login( token );
+
+module.exports = {
+	allCommands
+}

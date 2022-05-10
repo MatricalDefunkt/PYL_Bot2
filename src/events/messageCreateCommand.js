@@ -69,7 +69,7 @@ module.exports = {
                         } )
                         .setColor( "GREEN" )
                         .setDescription(
-                            `Syntax and use of \`${ command.data.name }\` command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n${ prefix }${ command.help.helpSyntax }\`\`\`\n\`\`\`\nUse:\n${ command.help.helpDescription }\`\`\``
+                            `Syntax and use of \`${ command.data.name }\` command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`\n${ prefix }${ command.help.helpSyntax }\`\`\`\n\`\`\`\nUse:\n${ command.help.helpDescription }\`\`\``
                         )
 
                     return msg.reply( { embeds: [ helpEmbed ] } ).then( msg => setTimeout( () =>

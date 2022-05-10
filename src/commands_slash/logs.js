@@ -49,19 +49,14 @@ module.exports = {
                 .addStringOption( o => o
                     .setName( 'caseid' )
                     .setDescription( 'Case ID of the log you want to remove' )
-                    .setRequired( true ) 
-                ) 
+                    .setRequired( true )
+                )
             ),
-    helpEmbed: new MessageEmbed()
-        .setTitle( "Use of Logs" )
-        .setAuthor( {
-            name: "PYL Bot#9640",
-            iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
-        } )
-        .setColor( "GREEN" )
-        .setDescription(
-            `Syntax and use of 'Logs' command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`diff\n+   /logs <target>\`\`\`\n\`\`\`\nUse:\nThe logs comamnd returns with all the infractions / notes for a given user for this server.\`\`\``
-        ),
+    help: {
+        helpDescription: `The logs command has multiple sub commands.\nClear => Clears an infraction from the database using the caseID\nCount => Counts the number of infractions for given user.\nView => Brings all the infractions stored for the given user.\nView With ID => Brings all infractions stored for a user with the given ID.`,
+        helpSyntax: `logs <type-of-action> <arguements>`,
+        helpEmbed: false
+    },
     permissions: {
         ownerOnly: false,
         staffOnly: true,

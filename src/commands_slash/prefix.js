@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require( '@discordjs/builders' )
-const { Client, CommandInteraction } = require( 'discord.js' );
+const { Client, CommandInteraction, MessageEmbed } = require( 'discord.js' );
 const fs = require( 'fs' );
 const path = require( 'path' );
 const { Prefix } = require( '../database/database' );
@@ -35,6 +35,11 @@ module.exports = {
                 .setName( 'prefix' )
                 .setDescription( 'The prefix to set to, if you wish to change it.' )
             ),
+    help: {
+        helpDescription: `The prefix command replies with, or allowes you to change the prefix for the bot for its slash commands.`,
+        helpSyntax: `prefix <type> <action> [prefix]`,
+        helpEmbed: true
+    },
     permissions: {
         ownerOnly: false,
         staffOnly: false,
