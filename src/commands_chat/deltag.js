@@ -1,5 +1,5 @@
 const { ActionRow } = require( '@discordjs/builders' );
-const { MessageEmbed, MessageButton, InteractionCollector } = require( 'discord.js' )
+const { MessageButton, InteractionCollector } = require( 'discord.js' )
 const { Tags } = require( '../database/database' )
 
 module.exports = {
@@ -53,7 +53,8 @@ module.exports = {
                 .setDisabled( true )
         )
         const reply = await msg.reply( { content: `Are you sure you want to delete the tag \`${ tag.getDataValue( 'tagName' ) }\`?`, components: [ row ] } )
-        const btnCollector = new InteractionCollector( client, { interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON', guild: msg.guild, max: 1, maxComponents: 1, message: reply, time: 60000 } )
+        const filter = ( interaction ) => interaction.user.id === msg.author.id
+        const btnCollector = new InteractionCollector( client, { interactionType: 'MESSAGE_COMPONENT', componentType: 'BUTTON', guild: msg.guild, max: 1, maxComponents: 1, message: reply, time: 60000, filter: filter } )
 
         btnCollector.on( 'collect', async button =>
         {
