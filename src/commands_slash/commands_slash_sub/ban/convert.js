@@ -16,7 +16,6 @@ module.exports = {
      */
     async execute ( client, interaction )
     {
-        await interaction.deferReply( { ephemeral: true } )
 
         const convertId = interaction.options.getString( 'user-id' )
         if ( interaction.options.getString( 'user-id' ).length != 18 ) return interaction.editReply( { content: `Please enter a valid user ID` } )

@@ -16,7 +16,7 @@ module.exports = {
      */
     async execute ( client, interaction )
     {
-        await interaction.deferReply( { ephemeral: true } );
+        
         const bannee = interaction.options.getMember( "user" );
         let _reason = interaction.options.getInteger( "reason" );
         const time = interaction.options.getInteger( "msg-history" );
