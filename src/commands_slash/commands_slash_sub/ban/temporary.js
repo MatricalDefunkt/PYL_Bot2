@@ -16,7 +16,7 @@ module.exports = {
      */
     async execute ( client, interaction )
     {
-        
+
         const bannee = interaction.options.getMember( "user" );
         let _reason = interaction.options.getInteger( "reason" );
         const time = interaction.options.getInteger( "msg-history" );
@@ -98,7 +98,7 @@ module.exports = {
                 hours: parseInt( hours.replace( "h", "" ) ),
             };
 
-            if ( duration.days < 1 || duration.weeks < 1 || duration.hours < 1 ) return interaction.editReply( { content: `Minimum duration of a ban is 1H, sadly.` } )
+            if ( ( duration.days < 1 && duration.weeks < 1 ) && duration.hours < 1 ) return interaction.editReply( { content: `Minimum duration of a ban is 1H, sadly.` } )
 
             durationTimestamp = Math.trunc( interaction.createdTimestamp / 1000 ) + (
                 ( duration.weeks * 604800 ) +
@@ -184,12 +184,12 @@ module.exports = {
                             const dbmod = `<@${ infraction.tempBan.getDataValue( 'modID' ) }>`;
                             const dbreason = infraction.tempBan.getDataValue( 'reason' );
                             const dbtime = `<t:${ Math.trunc( Date.parse( infraction.tempBan.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
-                            const dbduration = infraction.tempBan.getDataValue('duration')
-    
+                            const dbduration = infraction.tempBan.getDataValue( 'duration' )
+
                             const embed = new MessageEmbed()
                                 .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
                                 .setColor( 'YELLOW' )
-                                .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }\n**End-Time** - <t:${dbduration}:F>` )
+                                .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }\n**End-Time** - <t:${ dbduration }:F>` )
                                 .setFooter( { iconURL: interaction.user.avatarURL(), text: interaction.user.tag } )
                                 .setTimestamp()
                             await interaction.editReply( { embeds: [ embed ] } )
@@ -227,12 +227,12 @@ module.exports = {
                         const dbmod = `<@${ infraction.tempBan.getDataValue( 'modID' ) }>`;
                         const dbreason = infraction.tempBan.getDataValue( 'reason' );
                         const dbtime = `<t:${ Math.trunc( Date.parse( infraction.tempBan.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
-                        const dbduration = infraction.tempBan.getDataValue('duration')
+                        const dbduration = infraction.tempBan.getDataValue( 'duration' )
 
                         const embed = new MessageEmbed()
                             .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
                             .setColor( 'YELLOW' )
-                            .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }\n**End-Time** - <t:${dbduration}:F>` )
+                            .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }\n**End-Time** - <t:${ dbduration }:F>` )
                             .setFooter( { iconURL: interaction.user.id, text: interaction.user.tag } )
                             .setTimestamp()
                         await interaction.editReply( { embeds: [ embed ] } )
