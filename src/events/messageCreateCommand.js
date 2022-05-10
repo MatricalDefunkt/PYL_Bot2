@@ -31,7 +31,7 @@ module.exports = {
         if ( msg.content.startsWith( `${ prefix }` ) )
         {
 
-            const args = msg.content.substring( `${ prefix.length }` ).split( ' ' )
+            const args = msg.content.substring( `${ prefix.length }` ).trim().split( ' ' )
             if ( autocorrect( args[ 0 ] ) != args[ 0 ] )
             {
                 const command = client.textCommands.get( autocorrect( args[ 0 ] ) )
