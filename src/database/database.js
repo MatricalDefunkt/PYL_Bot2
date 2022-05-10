@@ -81,7 +81,5 @@ try
 {
     console.error( e );
 }
-//TODO: Work on it lol
-// working on it 🙄
 
 module.exports = { Tags, tempBans, Infractions, Prefix }
