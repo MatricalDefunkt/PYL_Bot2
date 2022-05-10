@@ -44,7 +44,7 @@ module.exports = {
 
                 return msg.author.send( { content: `Did you mean \`${ autocorrect( args[ 0 ] ) }\`?` } ).catch( () => { } )
             }
-            
+
             const command = client.textCommands.get( args[ 0 ].toLowerCase() )
 
             if ( !command ) { return } else
@@ -72,16 +72,11 @@ module.exports = {
                             `Syntax and use of \`${ command.data.name }\` command:\n\`\`\`diff\n+   <Mandatory>\n-   [Optional]\`\`\`\n\`\`\`\n${ prefix }${ command.help.helpSyntax }\`\`\`\n\`\`\`\nUse:\n${ command.help.helpDescription }\`\`\``
                         )
 
-                    return msg.reply( { embeds: [ helpEmbed ] } ).then( msg => setTimeout( () =>
+                    return msg.reply( { embeds: [ helpEmbed ] } ).then( reply => setTimeout( () =>
                     {
-                        try
-                        {
-                            msg.delete()
-                        } catch ( err )
-                        {
-                            console.error( err )
-                        }
-                    }, 30000 ) )
+                        reply.delete().catch( () => { } )
+                        msg.delete().catch( () => { } )
+                    }, 15000 ) )
                 }
 
                 try
