@@ -1,4 +1,4 @@
-const { MessageEmbed } = require( 'discord.js' )
+const { MessageEmbed, Client, Message } = require( 'discord.js' )
 const { Tags } = require( '../database/database' )
 
 module.exports = {
@@ -16,6 +16,13 @@ module.exports = {
         staffOnly: true,
         adminOnly: false,
     },
+    /**
+     * 
+     * @param {Message} msg 
+     * @param {Client} client 
+     * @param {Array<String>} args 
+     * @returns 
+     */
     async execute ( msg, client, args )
     {
 
@@ -71,9 +78,14 @@ module.exports = {
                     break;
             }
 
-            if ( args.slice( 2, args.size ).join( ' ' ).length > 256 )
+            if ( args.slice( 2, args.size ).join( ' ' ).length > 2000 )
             {
-                return msg.reply( { content: `Reply lengths cannot exceed 256 characters.` } )
+                return msg.reply( { content: `Reply lengths cannot exceed 2000 characters.` } )
+            }
+
+            if ( args[ 0 ].length > 255 )
+            {
+                return msg.reply( { content: `\`${ args[ 0 ] }\` is too long of a tag name.` } )
             }
 
             try
@@ -82,11 +94,11 @@ module.exports = {
                 const tag = await Tags.create( {
                     tagName: `${ args[ 0 ] }`,
                     tagPerms: integerPerm,
-                    tagReply: `${ args.slice( 2, args.size ).join( ' ' ) }`,
+                    tagReply: `${ args.slice( 2, args.size ).join( ' ' ).replaceAll( '\'', "\'" ) }`,
                     tagAuthor: `${ msg.author.id }`,
                 } );
 
-                msg.reply( { content: `New tag with the name \`${ args[ 0 ] }\` was created successfully!!` } )
+                msg.reply( { content: `New tag with the name \`${ tag.getDataValue( 'tagName' ) }\` was created successfully!!` } )
 
             } catch ( error )
             {
