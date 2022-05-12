@@ -76,7 +76,7 @@ module.exports = {
 			.setDescription(
 				`A deleted message was recovered from ${ msg.channel.toString() }:\n`
 			)
-			.addField( "Content:", `\n${ msg.content }` )
+			.addField( "Content:", `\n${ ( msg.content ) ? msg.content : `\`Null\`` }` )
 			.addField(
 				"In reply to:",
 				!msg.reference
@@ -84,6 +84,17 @@ module.exports = {
 					: `\n${ await getReply( msg.reference.messageId, msg ) }`
 			)
 			.setColor( "RED" );
+		if ( msg.attachments.size > 0 )
+		{
+			const msgAttachments = msg.attachments
+			const attatchmentBuilder = []
+			msgAttachments.forEach( attachment =>
+			{
+				attatchmentBuilder.push( attachment.attachment );
+			} )
+			const sendAttatchments = attatchmentBuilder.join( `\n` )
+			sendEmbed.addField( 'Attatchments:', `\n${ sendAttatchments }` )
+		}
 
 		const _logChannel = msg.guild.channels.cache.find(
 			( channel ) =>
@@ -174,7 +185,7 @@ module.exports = {
 						`${ errChannelId }`
 					);
 
-					console.error( error );
+					console.error( err );
 
 					await errChannel.send( {
 						content: `There was an error:\n\`\`\`js\n${ err }\`\`\``,
