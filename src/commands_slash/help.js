@@ -52,7 +52,7 @@ module.exports = {
             .setTitle( `Use of ${ command.data.name }` )
             .setAuthor( {
                 name: "PYL Bot#9640",
-                iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
+                iconURL: client.user.avatarURL(),
             } )
             .setColor( "GREEN" )
             .setDescription(
@@ -70,29 +70,49 @@ module.exports = {
      */
     async respond ( interaction, client )
     {
-        const { allCommands } = require( '../../index' );
-
-        const [ ...commands ] = allCommands[ Symbol.iterator ]()
-        const responses = [];
-        const commandNameValues = []
-
-        commands.forEach( command =>
+        try
         {
-            responses.push( { name: command[ 1 ].help.helpName, value: command[ 0 ] } )
-            commandNameValues.push( command[ 0 ] )
-        } )
+            const { allCommands } = require( '../../index' );
 
-        const typing = interaction.options.getFocused()
+            const [ ...commands ] = allCommands[ Symbol.iterator ]()
+            const responses = [];
+            const commandNameValues = []
 
-        if ( !typing ) return interaction.respond( responses )
+            commands.forEach( command =>
+            {
+                responses.push( { name: command[ 1 ].help.helpName, value: command[ 0 ] } )
+                commandNameValues.push( command[ 1 ].help.helpName )
+            } )
 
-        let foundCommands = commandNameValues.filter( command => command.includes( typing ) )
-        const typingResponse = [];
+            const autocorrect = require( 'autocorrect' )( { words: commandNameValues } );
 
-        foundCommands.forEach( foundCommand =>
+            const typing = interaction.options.getFocused()
+
+            if ( !typing ) return interaction.respond( responses )
+
+            let foundCommands = commandNameValues.filter( command => command.includes( typing ) )
+            const typingResponse = [];
+
+            foundCommands.forEach( foundCommand =>
+            {
+                typingResponse.push( { name: foundCommand, value: foundCommand } )
+            } )
+
+            if ( !typingResponse[ 0 ] ) return interaction.respond( [ { name: autocorrect( typing ), value: commandNameValues.find( command => command === autocorrect( typing ) ) } ] )
+
+            return interaction.respond( typingResponse )
+        } catch ( error )
         {
-            typingResponse.push( { name: foundCommand, value: foundCommand } )
-        } )
-        return interaction.respond( typingResponse )
+            if ( error.name === "Unknown interaction" )
+            {
+                const testGuild = await client.guilds.fetch( { force: false, cache: true, guild: '945355751260557393' } );
+                const errChannel = await testGuild.channels.fetch( '948089637774188564', { force: false, cache: true } );
+                errChannel.send( { content: `<@714473790939332679>, client is slow to respond to interactions.` } )
+            } else
+            {
+                console.error( error );
+            }
+        }
+
     }
 }
