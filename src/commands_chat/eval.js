@@ -20,7 +20,7 @@ module.exports = {
   },
   async execute ( msg, client, args )
   {
-    
+
     const errGuild = await client.guilds.fetch( `${ errGuildId }` );
     const errChannel = await errGuild.channels.fetch( `${ errChannelId }` );
 
