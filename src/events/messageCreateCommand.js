@@ -65,7 +65,7 @@ module.exports = {
                         .setTitle( `Use of ${ command.data.name }` )
                         .setAuthor( {
                             name: "PYL Bot#9640",
-                            iconURL: `https://cdn.discordapp.com/avatars/954655539546173470/4c10aad2d82cdff4dcb05a6c83005739.webp`,
+                            iconURL: client.user.avatarURL(),
                         } )
                         .setColor( "GREEN" )
                         .setDescription(

@@ -1,65 +1,62 @@
-const { Sequelize } = require( 'sequelize' )
+const { Sequelize, DataTypes } = require( 'sequelize' )
+const { uniqid } = require( 'uniqid' );
+require( 'dotenv' ).config();
 
-const sequelize = new Sequelize( 'database', 'user', 'password', {
-    host: 'localhost',
-    dialect: 'sqlite',
+const sequelize = new Sequelize( process.env.DBNAME, process.env.DBUSERNAME, process.env.DBPASSWORD, {
+    host: process.env.DBHOST,
+    port: process.env.DBPORT,
+    dialect: 'mariadb',
     logging: false,
-    storage: 'database.sqlite',
+    typeValidation: true,
 } );
+
 
 const Tags = sequelize.define( 'Tags', {
     tagName: {
-        type: Sequelize.STRING,
-        unique: true,
+        type: DataTypes.STRING( 255 ),
         primaryKey: true
     },
-    tagPerms: Sequelize.INTEGER,
-    tagReply: Sequelize.TEXT,
-    tagAuthor: Sequelize.STRING,
+    tagPerms: DataTypes.SMALLINT,
+    tagReply: DataTypes.STRING,
+    tagAuthor: DataTypes.STRING,
 }, {
     tableName: 'Tags',
 } );
 
-const tempBans = sequelize.define( 'tempBans', {
+const tempInfractions = sequelize.define( 'tempInfractions', {
     userID: {
-        type: Sequelize.TEXT,
-        unique: true,
+        type: DataTypes.STRING( 255 ),
         primaryKey: true
     },
-    finishTimeStamp: Sequelize.INTEGER,
-    modID: Sequelize.TEXT,
-    reason: Sequelize.TEXT,
-    guildID: Sequelize.TEXT
+    finishTimeStamp: DataTypes.INTEGER,
+    modID: DataTypes.TEXT,
+    reason: DataTypes.STRING,
+    guildID: DataTypes.TEXT,
 }, {
-    tableName: 'tempBans',
+    tableName: 'tempInfractions',
 } );
 
 const Infractions = sequelize.define( 'Infractions', {
     caseID: {
-        type: Sequelize.TEXT,
-        unique: true,
-        primaryKey: true
+        type: DataTypes.STRING( 255 ),
+        primaryKey: true,
     },
-    type: Sequelize.TEXT,
-    targetID: Sequelize.TEXT,
-    modID: Sequelize.TEXT,
-    reason: Sequelize.STRING,
-    duration: {
-        type: Sequelize.TEXT,
-        allowNull: true,
-    }
+    type: DataTypes.TEXT,
+    targetID: DataTypes.TEXT,
+    modID: DataTypes.TEXT,
+    reason: DataTypes.STRING,
+    duration: DataTypes.TEXT,
 }, {
     tableName: 'Infractions',
 } );
 
 const Prefix = sequelize.define( 'Prefix', {
     type: {
-        type: Sequelize.TEXT,
-        unique: true,
+        type: DataTypes.STRING( 10 ),
         primaryKey: true
     },
     prefix: {
-        type: Sequelize.TEXT,
+        type: DataTypes.STRING( 2 ),
         unique: true
     }
 }, {
@@ -68,18 +65,15 @@ const Prefix = sequelize.define( 'Prefix', {
 
 try
 {
-    async function sync ()
-    {
-        await Tags.sync();
-        await tempBans.sync();
-        await Infractions.sync();
-        await Prefix.sync();
-    }
-    sync()
-    
+
+    Tags.sync().catch( ( error ) => { console.error( error ) } );
+    tempInfractions.sync().catch( ( error ) => { console.error( error ) } );
+    Infractions.sync().catch( ( error ) => { console.error( error ) } );
+    Prefix.sync().catch( ( error ) => { console.error( error ) } );
+
 } catch ( e )
 {
     console.error( e );
 }
 
-module.exports = { Tags, tempBans, Infractions, Prefix }
+module.exports = { Tags, tempInfractions, Infractions, Prefix }

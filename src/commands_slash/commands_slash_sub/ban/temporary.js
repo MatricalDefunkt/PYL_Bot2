@@ -1,5 +1,5 @@
 const { Client, CommandInteraction, MessageEmbed } = require( 'discord.js' );
-const { tempBans } = require( '../../../database/database' );
+const { tempBans: tempInfractions } = require( '../../../database/database' );
 const Infraction = require( '../../../utils/Infraction.js' );
 const { rules } = require( '../../../utils/rules.json' );
 
@@ -106,7 +106,7 @@ module.exports = {
                 ( duration.hours * 3600 )
             )
 
-            await tempBans
+            await tempInfractions
                 .create( {
                     userID: bannee.id,
                     finishTimeStamp: durationTimestamp,
@@ -246,7 +246,7 @@ module.exports = {
                     } );
             } else if ( error.name === 'SequelizeUniqueConstraintError' )
             {
-                const oldBannee = await tempBans.findOne( { where: { userID: bannee.id } } )
+                const oldBannee = await tempInfractions.findOne( { where: { userID: bannee.id } } )
                 return interaction.editReply( { content: `${ bannee } already has a pending temp-ban, ending <t:${ oldBannee.getDataValue( 'finishTimeStamp' ) }:R>, on <t:${ oldBannee.getDataValue( 'finishTimeStamp' ) }:F>.` } )
             } else
             {

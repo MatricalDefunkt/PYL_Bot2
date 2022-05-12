@@ -1,5 +1,5 @@
-const { Client, CommandInteraction, MessageActionRow, MessageButton } = require( 'discord.js' );
-const { tempBans } = require( '../../../database/database' );
+const { Client, CommandInteraction, MessageActionRow, MessageButton, InteractionCollector } = require( 'discord.js' );
+const { tempInfractions } = require( '../../../database/database' );
 const { rules } = require( '../../../utils/rules.json' );
 const Infraction = require( '../../../utils/Infraction.js' );
 
@@ -21,7 +21,7 @@ module.exports = {
         if ( interaction.options.getString( 'user-id' ).length != 18 ) return interaction.editReply( { content: `Please enter a valid user ID` } )
         const reason = interaction.options.getString( 'reason' )
 
-        const convertee = await tempBans.findOne( { where: { userID: convertId } } )
+        const convertee = await tempInfractions.findOne( { where: { userID: convertId } } )
 
         const row = new MessageActionRow()
             .addComponents( [

@@ -1,6 +1,6 @@
 require( 'dotenv' ).config();
 const { Client, Collection } = require( 'discord.js' );
-const { tempBans, Prefix } = require( './src/database/database' );
+const { tempInfractions, Prefix } = require( './src/database/database' );
 const token = process.env.TOKEN;
 const path = require( 'path' )
 const fs = require( 'fs' );
@@ -88,7 +88,7 @@ for ( const file of eventFiles )
 // TempBan Check
 setInterval( async () =>
 {
-	const tempBan = await tempBans.findOne( {
+	const tempBan = await tempInfractions.findOne( {
 		where: {
 			finishTimeStamp: {
 				[ Op.lt ]:
