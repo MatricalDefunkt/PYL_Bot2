@@ -40,10 +40,10 @@ module.exports = {
         if ( _reason == 0 )
         {
 
-            reason = { id: 0, rule: interaction.options.getString( 'custom-reason' ), reason: interaction.options.getString( 'custom-reason' ) }
+            reason = { id: 0, rule: interaction.options.getString( 'custom-reason' ) }
             if ( !reason.rule )
             {
-                reason = { id: 0, rule: 'None provided.', reason: 'None provided.' };
+                reason = { id: 0, rule: 'None provided.' };
             }
             return reason;
         } else
@@ -83,12 +83,12 @@ module.exports = {
             {
                 interaction.editReply( { content: `${ bannee } has recieved the ban message.\nBanning now...` } )
                 bannee
-                    .ban( { days: time, reason: `${ interaction.user.tag } || ${ reason.reason }` } )
+                    .ban( { days: time, reason: `${ interaction.user.tag } || ${ reason.rule }` } )
                     .then( async () =>
                     {
                         await interaction.editReply( { content: `${ bannee } has been banned.` } )
                         const infraction = new Infraction()
-                        await infraction.addBan( interaction.user.id, bannee.user.id, reason.reason )
+                        await infraction.addBan( interaction.user.id, bannee.user.id, reason.rule )
                         const dbcaseId = infraction.ban.getDataValue( 'caseID' );
                         const dbtype = infraction.ban.getDataValue( 'type' );
                         const dbtarget = `<@${ infraction.ban.getDataValue( 'targetID' ) }>`;
@@ -118,12 +118,12 @@ module.exports = {
             {
                 await interaction.editReply( { content: `Cannot send messages to ${ bannee }\nBanning now...` } )
                 await bannee
-                    .ban( { days: time, reason: `${ reason.reason }` } )
+                    .ban( { days: time, reason: `${ reason.rule }` } )
                     .then( async () =>
                     {
                         await interaction.editReply( { content: `${ bannee } has been banned.` } )
                         const infraction = new Infraction()
-                        await infraction.addBan( interaction.user.id, bannee.user.id, reason.reason )
+                        await infraction.addBan( interaction.user.id, bannee.user.id, reason.rule )
                         const dbcaseId = infraction.ban.getDataValue( 'caseID' );
                         const dbtype = infraction.ban.getDataValue( 'type' );
                         const dbtarget = `<@${ infraction.ban.getDataValue( 'targetID' ) }>`;

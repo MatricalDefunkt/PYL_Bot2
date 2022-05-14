@@ -111,7 +111,7 @@ module.exports = {
                     userID: bannee.id,
                     finishTimeStamp: durationTimestamp,
                     modID: interaction.user.id,
-                    reason: reason.reason,
+                    reason: reason.rule,
                     guildID: interaction.guild.id
                 } )
                 .then( () =>
@@ -169,7 +169,7 @@ module.exports = {
                     bannee
                         .ban( {
                             days: time,
-                            reason: `${ interaction.user.tag } || ${ reason.reason }`,
+                            reason: `${ interaction.user.tag } || ${ reason.rule }`,
                         } )
                         .then( async () =>
                         {
@@ -177,7 +177,7 @@ module.exports = {
                                 content: `${ bannee } has been banned. They will be unbanned <t:${ durationTimestamp }:R>`,
                             } )
                             const infraction = new Infraction()
-                            await infraction.addTempBan( interaction.user.id, bannee.user.id, reason.reason, durationTimestamp )
+                            await infraction.addTempBan( interaction.user.id, bannee.user.id, reason.rule, durationTimestamp )
                             const dbcaseId = infraction.tempBan.getDataValue( 'caseID' );
                             const dbtype = infraction.tempBan.getDataValue( 'type' );
                             const dbtarget = `<@${ infraction.tempBan.getDataValue( 'targetID' ) }>`;
@@ -212,7 +212,7 @@ module.exports = {
                 bannee
                     .ban( {
                         days: time,
-                        reason: `${ interaction.user.tag } || ${ reason.reason }`,
+                        reason: `${ interaction.user.tag } || ${ reason.rule }`,
                     } )
                     .then( async () =>
                     {
@@ -220,7 +220,7 @@ module.exports = {
                             content: `${ bannee } has been banned. They will be unbanned <t:${ durationTimestamp }:R>`,
                         } )
                         const infraction = new Infraction()
-                        await infraction.addTempBan( interaction.user.id, bannee.user.id, reason.reason, durationTimestamp )
+                        await infraction.addTempBan( interaction.user.id, bannee.user.id, reason.rule, durationTimestamp )
                         const dbcaseId = infraction.tempBan.getDataValue( 'caseID' );
                         const dbtype = infraction.tempBan.getDataValue( 'type' );
                         const dbtarget = `<@${ infraction.tempBan.getDataValue( 'targetID' ) }>`;

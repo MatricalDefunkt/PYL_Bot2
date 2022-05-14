@@ -126,7 +126,7 @@ module.exports = {
                     {
                         await interaction.editReply( { content: `${ kickee } has been kicked.` } );
                         const infraction = new Infraction()
-                        await infraction.addKick( interaction.user.id, kickee.user.id, reason.reason )
+                        await infraction.addKick( interaction.user.id, kickee.user.id, reason.rule )
                         const dbcaseId = infraction.kick.getDataValue( 'caseID' );
                         const dbtype = infraction.kick.getDataValue( 'type' );
                         const dbtarget = `<@${ infraction.kick.getDataValue( 'targetID' ) }>`;
@@ -160,7 +160,7 @@ module.exports = {
                     {
                         interaction.editReply( { content: `${ kickee } has been kicked, but did not recieve the message.` } )
                         const infraction = new Infraction()
-                        await infraction.addKick( interaction.user.id, kickee.user.id, reason.reason )
+                        await infraction.addKick( interaction.user.id, kickee.user.id, reason.rule )
                         const dbcaseId = infraction.kick.getDataValue( 'caseID' );
                         const dbtype = infraction.kick.getDataValue( 'type' );
                         const dbtarget = `<@${ infraction.kick.getDataValue( 'targetID' ) }>`;
