@@ -8,6 +8,12 @@ const sequelize = new Sequelize( process.env.DBNAME, process.env.DBUSERNAME, pro
     dialect: 'mariadb',
     logging: false,
     typeValidation: true,
+    pool: {
+        max: 10,
+        min: 1,
+        acquire: 300_000,
+        idle: 900_000,
+    }
 } );
 
 
