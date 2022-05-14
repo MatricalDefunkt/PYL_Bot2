@@ -51,6 +51,20 @@ module.exports = {
                     .setDescription( 'Case ID of the log you want to remove' )
                     .setRequired( true )
                 )
+            )
+            .addSubcommand( sc => sc
+                .setName( 'set-reason' )
+                .setDescription( 'Allows you to set or reset the reason of a case or note using the caseID.' )
+                .addStringOption( o => o
+                    .setName( 'caseid' )
+                    .setDescription( 'CaseID you want to refer to' )
+                    .setRequired( true )
+                )
+                .addStringOption( o => o
+                    .setName( 'reason' )
+                    .setDescription( 'The new reason you would like to change it to.' )
+                    .setRequired( true )
+                )
             ),
     help: {
         helpName: 'Logs',
