@@ -88,26 +88,30 @@ module.exports = {
 
             const typing = interaction.options.getFocused()
 
-            if ( !typing ) return interaction.respond( responses )
+            if ( responses.length > 25 ) responses.slice( 0, 25 )
 
-            let foundCommands = commandNameValues.filter( command => command.includes( typing ) )
+            if ( !typing ) return await interaction.respond( responses )
+
+            let foundCommands = responses.filter( command => command.name.toLowerCase().includes( typing ) )
             const typingResponse = [];
 
             foundCommands.forEach( foundCommand =>
             {
-                typingResponse.push( { name: foundCommand, value: foundCommand } )
+                typingResponse.push( { name: foundCommand.name, value: foundCommand.value } )
             } )
 
-            if ( !typingResponse[ 0 ] ) return interaction.respond( [ { name: autocorrect( typing ), value: commandNameValues.find( command => command === autocorrect( typing ) ) } ] )
+            if ( typingResponse.length > 25 ) typingResponse.slice( 0, 25 )
 
-            return interaction.respond( typingResponse )
+            if ( !typingResponse[ 0 ] ) return await interaction.respond( [ { name: autocorrect( typing ), value: commandNameValues.find( command => command === autocorrect( typing ) ) } ] )
+
+            return await interaction.respond( typingResponse )
         } catch ( error )
         {
             if ( error.name === "Unknown interaction" )
             {
                 const testGuild = await client.guilds.fetch( { force: false, cache: true, guild: '945355751260557393' } );
                 const errChannel = await testGuild.channels.fetch( '948089637774188564', { force: false, cache: true } );
-                errChannel.send( { content: `<@714473790939332679>, client is slow to respond to interactions.` } )
+                errChannel.send( { content: `<@714473790939332679>, client is slow to respond to autocomplete interactions.` } )
             } else
             {
                 console.error( error );
