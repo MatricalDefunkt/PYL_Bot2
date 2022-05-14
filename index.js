@@ -36,38 +36,90 @@ for ( const file of slashCommandFiles )
 
 client.prefixes = new Collection();
 
-Prefix.findAll().then( async ( [ command, tag ] ) =>
-{
-	if ( !command || !tag )
-	{
-		const newCommand = await Prefix.findOrCreate( { where: { type: 'command' }, defaults: { prefix: '!!' } } )
-		const newTag = await Prefix.findOrCreate( { where: { type: 'tag' }, defaults: { prefix: '--' } } )
-		client.prefixes.set( 'command', newCommand.getDataValue( 'prefix' ) );
-		client.prefixes.set( 'tag', newTag.getDataValue( 'prefix' ) );
-		console.log( client.prefixes )
-		return
-	} else
-	{
-		client.prefixes.set( 'command', command.getDataValue( 'prefix' ) );
-		client.prefixes.set( 'tag', tag.getDataValue( 'prefix' ) );
-		console.log( client.prefixes )
-	}
-} )
-
 client.once( 'ready', async () =>
 {
+	const testGuild = await client.guilds.fetch( { force: false, cache: true, guild: '945355751260557393' } );
+	const errChannel = await testGuild.channels.fetch( '948089637774188564', { force: false, cache: true } );
+	errChannel.send( { content: `${ client.user } logged in while watching ${ client.guilds.cache.reduce( ( acc, guild ) => acc + guild.memberCount, 0 ) } members, at the moment, at <t:${ Math.trunc( client.readyTimestamp / 1000 ) }:F>.` } )
+	Prefix.findAll().then( async ( [ command, tag ] ) =>
+	{
+		if ( !command || !tag )
+		{
+			Prefix.findOne( { where: { type: 'command' } } )
+				.then( commandPrefix =>
+				{
+					if ( !commandPrefix )
+					{
+						Prefix.create( {
+							type: 'command',
+							prefix: '!!'
+						} )
+							.then( createdPrefix =>
+							{
+								client.prefixes.set( 'command', createdPrefix.getDataValue( 'prefix' ) )
+								errChannel.send( ` Command prefix => \`${ client.prefixes.get( 'command' ) }\`` )
+							} )
+							.catch( err =>
+							{
+								console.error( err );
+								client.destroy()
+							} )
+					} else
+					{
+						client.prefixes.set( 'command', commandPrefix.getDataValue( 'prefix' ) );
+						errChannel.send( ` Command prefix => \`${ client.prefixes.get( 'command' ) }\`` )
+					}
+				} )
+				.catch( err =>
+				{
+					console.error( err );
+					client.destroy()
+				} )
+			Prefix.findOne( { where: { type: 'tag' } } )
+				.then( tagPrefix =>
+				{
+					if ( !tagPrefix )
+					{
+						Prefix.create( {
+							type: 'tag',
+							prefix: '--'
+						} )
+							.then( createdPrefix =>
+							{
+								client.prefixes.set( 'tag', createdPrefix.getDataValue( 'prefix' ) )
+								errChannel.send( `Tag prefix => \`${ client.prefixes.get( 'tag' ) }\`` )
+							} )
+							.catch( err =>
+							{
+								console.error( err );
+								client.destroy()
+							} )
+					} else
+					{
+						client.prefixes.set( 'tag', tagPrefix.getDataValue( 'prefix' ) );
+					}
+				} )
+				.catch( err =>
+				{
+					console.error( err );
+					client.destroy()
+				} )
+			console.log( client.prefixes )
+			return
+		} else
+		{
+			client.prefixes.set( 'command', command.getDataValue( 'prefix' ) );
+			client.prefixes.set( 'tag', tag.getDataValue( 'prefix' ) );
+			console.log( client.prefixes )
+			const testGuild = await client.guilds.fetch( { force: false, cache: true, guild: '945355751260557393' } );
+			const errChannel = await testGuild.channels.fetch( '948089637774188564', { force: false, cache: true } );
+			errChannel.send( { content: `${ client.user } logged in while watching ${ client.guilds.cache.reduce( ( acc, guild ) => acc + guild.memberCount, 0 ) } members, at the moment, and command prefix \`${ client.prefixes.get( 'command' ) }\`, along with command prefix of \`${ client.prefixes.get( 'tag' ) }\` at <t:${ Math.trunc( client.readyTimestamp / 1000 ) }:F>.` } )
+		}
+	} )
+
 	console.log( 'Ready!' );
 	client.user.setPresence( { status: `idle` } );
 	client.user.setActivity( { name: `PYL do PYL stuff`, type: 3 } )
-
-	const testGuild = await client.guilds.fetch( { force: false, cache: true, guild: '945355751260557393' } );
-	const errChannel = await testGuild.channels.fetch( '948089637774188564', { force: false, cache: true } );
-	errChannel.send( { content: `${ client.user } logged in while watching ${ client.guilds.cache.reduce( ( acc, guild ) => acc + guild.memberCount, 0 ) } members, at the moment, and command prefix \`${ client.prefixes.get( 'command' ) }\`, along with command prefix of \`${ client.prefixes.get( 'tag' ) }\` at <t:${ Math.trunc( client.readyTimestamp / 1000 ) }:F>.` } )
-	const confessionsBot = await testGuild.members.fetch( { force: true, cache: true, user: '937038291998478456' } )
-	if ( !confessionsBot.presence )
-	{
-		await errChannel.send( { content: '<@714473790939332679>, <@937038291998478456> is offline.' } )
-	}
 
 } );
 
@@ -119,7 +171,10 @@ setInterval( async () =>
 	}
 }, 600000 );
 
-client.login( token );
+setTimeout( () =>
+{
+	client.login( token );
+}, 5000 );
 
 module.exports = {
 	allCommands
