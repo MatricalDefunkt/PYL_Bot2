@@ -77,7 +77,7 @@ module.exports = {
                         const mod = `<@${ newInfraction.getDataValue( 'modID' ) }>`;
                         const reason = newInfraction.getDataValue( 'reason' );
                         const time = `<t:${ Math.trunc( Date.parse( newInfraction.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
-                        const description = `Case ID - ${ caseId }\nType - ${ type }\nTarget - ${ target }\nModerator - ${ mod }\n${ ( type == 'Note' ) ? `Note` : `Reason` } - ${ reason }\nTime - ${ time }`
+                        const description = `**Case ID** - ${ caseId }\n**Type** - ${ type }\n**Target** - ${ target }\n**Moderator** - ${ mod }\n${ ( type == 'Note' ) ? `**Note**` : `**Reason**` } - ${ reason }\n**Time** - ${ time }`
                         embed.setDescription( description )
 
                         return collected.update( { content: `New ${ ( type == 'Note' ) ? `note` : `reason` } has been set to \`${ newReason }\``, embeds: [ embed ], components: [ disabledRow ] } )
