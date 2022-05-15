@@ -101,7 +101,7 @@ module.exports = {
         {
             interaction.editReply( { content: `${ userForWarn } has recieved the warn message.\nSaving now...` } )
             const infraction = new Infraction()
-            await infraction.addWarn( interaction.user.id, userForWarn.user.id, reason.rule )
+            await infraction.addWarn( interaction.user.id, userForWarn.user.id, reason.reason )
             const dbcaseId = infraction.warn.getDataValue( 'caseID' );
             const dbtype = infraction.warn.getDataValue( 'type' );
             const dbtarget = `<@${ infraction.warn.getDataValue( 'targetID' ) }>`;

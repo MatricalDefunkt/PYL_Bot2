@@ -177,7 +177,7 @@ module.exports = {
                                 content: `${ bannee } has been banned. They will be unbanned <t:${ durationTimestamp }:R>`,
                             } )
                             const infraction = new Infraction()
-                            await infraction.addTempMute( interaction.user.id, bannee.user.id, reason.rule, durationTimestamp )
+                            await infraction.addTempMute( interaction.user.id, bannee.user.id, reason.reason, durationTimestamp )
                             const dbcaseId = infraction.tempMute.getDataValue( 'caseID' );
                             const dbtype = infraction.tempMute.getDataValue( 'type' );
                             const dbtarget = `<@${ infraction.tempMute.getDataValue( 'targetID' ) }>`;
@@ -220,7 +220,7 @@ module.exports = {
                             content: `${ bannee } has been banned. They will be unbanned <t:${ durationTimestamp }:R>`,
                         } )
                         const infraction = new Infraction()
-                        await infraction.addTempMute( interaction.user.id, bannee.user.id, reason.rule, durationTimestamp )
+                        await infraction.addTempMute( interaction.user.id, bannee.user.id, reason.reason, durationTimestamp )
                         const dbcaseId = infraction.tempMute.getDataValue( 'caseID' );
                         const dbtype = infraction.tempMute.getDataValue( 'type' );
                         const dbtarget = `<@${ infraction.tempMute.getDataValue( 'targetID' ) }>`;

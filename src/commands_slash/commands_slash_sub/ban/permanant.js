@@ -40,12 +40,20 @@ module.exports = {
         if ( _reason == 0 )
         {
 
-            reason = { id: 0, rule: interaction.options.getString( 'custom-reason' ) }
+            reason = {
+                id: 0,
+                rule: interaction.options.getString( 'custom-reason' ),
+                reason: interaction.options.getString( 'custom-reason' )
+            }
             if ( !reason.rule )
             {
-                reason = { id: 0, rule: 'None provided.' };
+                reason = {
+                    id: 0,
+                    rule: 'None provided.',
+                    reason: 'None provided.'
+                };
             }
-            return reason;
+
         } else
         {
 
@@ -83,24 +91,24 @@ module.exports = {
             {
                 interaction.editReply( { content: `${ bannee } has recieved the ban message.\nBanning now...` } )
                 bannee
-                    .ban( { days: time, reason: `${ interaction.user.tag } || ${ reason.rule }` } )
+                    .ban( { days: time, reason: `${ interaction.user.tag } || ${ reason.reason }` } )
                     .then( async () =>
                     {
                         await interaction.editReply( { content: `${ bannee } has been banned.` } )
                         const infraction = new Infraction()
-                        await infraction.addBan( interaction.user.id, bannee.user.id, reason.rule )
+                        await infraction.addBan( interaction.user.id, bannee.user.id, reason.reason )
                         const dbcaseId = infraction.ban.getDataValue( 'caseID' );
                         const dbtype = infraction.ban.getDataValue( 'type' );
                         const dbtarget = `<@${ infraction.ban.getDataValue( 'targetID' ) }>`;
                         const dbmod = `<@${ infraction.ban.getDataValue( 'modID' ) }>`;
                         const dbreason = infraction.ban.getDataValue( 'reason' );
                         const dbtime = `<t:${ Math.trunc( Date.parse( infraction.ban.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
-        
+
                         const embed = new MessageEmbed()
                             .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
                             .setColor( 'YELLOW' )
                             .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
-                            .setFooter({iconURL: interaction.user.avatarURL(), text: interaction.user.tag})
+                            .setFooter( { iconURL: interaction.user.avatarURL(), text: interaction.user.tag } )
                             .setTimestamp()
                         await interaction.editReply( { embeds: [ embed ] } )
                     } )
@@ -123,19 +131,19 @@ module.exports = {
                     {
                         await interaction.editReply( { content: `${ bannee } has been banned.` } )
                         const infraction = new Infraction()
-                        await infraction.addBan( interaction.user.id, bannee.user.id, reason.rule )
+                        await infraction.addBan( interaction.user.id, bannee.user.id, reason.reason )
                         const dbcaseId = infraction.ban.getDataValue( 'caseID' );
                         const dbtype = infraction.ban.getDataValue( 'type' );
                         const dbtarget = `<@${ infraction.ban.getDataValue( 'targetID' ) }>`;
                         const dbmod = `<@${ infraction.ban.getDataValue( 'modID' ) }>`;
                         const dbreason = infraction.ban.getDataValue( 'reason' );
                         const dbtime = `<t:${ Math.trunc( Date.parse( infraction.ban.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
-        
+
                         const embed = new MessageEmbed()
                             .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
                             .setColor( 'YELLOW' )
                             .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
-                            .setFooter({iconURL: interaction.user.avatarURL(), text: interaction.user.tag})
+                            .setFooter( { iconURL: interaction.user.avatarURL(), text: interaction.user.tag } )
                             .setTimestamp()
                         await interaction.editReply( { embeds: [ embed ] } )
                     } )
