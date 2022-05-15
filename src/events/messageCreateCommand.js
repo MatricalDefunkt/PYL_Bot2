@@ -25,9 +25,13 @@ module.exports = {
     {
 
         const prefix = client.prefixes.get( 'command' )
+        const tagPrefix = client.prefixes.get( 'tag' )
 
         if ( !msg.guild ) return;
         if ( msg.author.bot ) return;
+
+        if ( msg.content === String( '<@' + client.user.id + '>' ) ) return msg.reply( { content: `Hey there! My command prefix is \`${ prefix }\` and my tag prefix is \`${ tagPrefix }\`! Feel free to use \`/help\` if you need help with a command.` } )
+
         if ( msg.content.startsWith( `${ prefix }` ) )
         {
 
