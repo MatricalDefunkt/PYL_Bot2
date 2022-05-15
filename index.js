@@ -1,12 +1,12 @@
 require( 'dotenv' ).config();
-const { Client, Collection } = require( 'discord.js' );
-const { tempInfractions, Prefix } = require( './src/database/database' );
+const { Client, Collection, Intents } = require( 'discord.js' );
+const { tempInfractions, Prefix, Infractions } = require( './src/database/database' );
 const token = process.env.TOKEN;
 const path = require( 'path' )
 const fs = require( 'fs' );
-const { Op } = require( 'sequelize' );
+const { Op, where } = require( 'sequelize' );
 
-const client = new Client( { intents: 131071, failIfNotExists: false } );
+const client = new Client( { intents: 66559, failIfNotExists: false } );
 
 const textCommandFiles = fs.readdirSync( path.join( __dirname, './src/commands_chat' ) ).filter( file => file.endsWith( '.js' ) );
 const slashCommandFiles = fs.readdirSync( path.join( __dirname, './src/commands_slash' ) ).filter( file => file.endsWith( '.js' ) );
@@ -137,26 +137,56 @@ for ( const file of eventFiles )
 
 }
 
-// TempBan Check
+// Temporary infractions Check
 setInterval( async () =>
 {
-	const tempBan = await tempInfractions.findOne( {
+	const infraction = await Infractions.findOne( {
 		where: {
-			finishTimeStamp: {
+			duration: {
 				[ Op.lt ]:
-					Math.trunc( Date.now() / 1000 )
+					`${ Math.trunc( Date.now() / 1000 ) }`
 			}
 		}
 	} )
 
-	if ( !tempBan ) return;
+	if ( !infraction ) return;
 
-	const banGuild = await client.guilds.fetch( String( tempBan.getDataValue( 'guildID' ) ), false );
-	banGuild.bans.remove( tempBan.getDataValue( 'userID' ), `Temporary ban of duration: ${ Math.trunc( ( Math.trunc( Date.now() / 1000 ) - tempBan.getDataValue( 'finishTimeStamp' ) ) / 86400 ) } days.` ).catch( error => { return console.error( error ) } )
-	await tempBan.destroy().catch( error => console.error( error ) )
+	if ( infraction.getDataValue( 'type' ) === 'TempMute' )
+	{
+		const guild = await client.guilds.fetch( { force: false, cache: true, guild: '945355751260557393' } )
+		const mute = await guild.members.fetch( { member: infraction.getDataValue( 'targetID' ), force: false, cache: true } )
+		mute.roles.remove( '974245786781102081', `Temporary mute of duration: ${ Math.trunc( ( Math.trunc( Date.now() / 1000 ) - infraction.getDataValue( 'duration' ) ) / 3600 ) } hour(s).` )
+			.then( async () =>
+			{
+				await infraction.update( { duration: `Completed` }, { where: { caseID: infraction.getDataValue( 'caseID' ) } } )
+			} )
+			.catch( async ( err ) =>
+			{
+				console.error( err )
+				const testGuild = await client.guilds.fetch( { force: false, cache: true, guild: '945355751260557393' } );
+				const errChannel = await testGuild.channels.fetch( '948089637774188564', { force: false, cache: true } );
+				errChannel.send( { content: `<@714473790939332679>, could not unmute <@${ infraction.getDataValue( 'targetID' ) }> for some reason. Check console.` } )
+			} )
+	} else if ( infraction.getDataValue( 'type' ) === 'TempBan' )
+	{
+		const guild = await client.guilds.fetch( { force: false, cache: true, guild: '945355751260557393' } )
+		guild.bans.remove( infraction.getDataValue( 'targetID' ), `Temporary ban of duration: ${ Math.trunc( ( Math.trunc( Date.now() / 1000 ) - infraction.getDataValue( 'duration' ) ) / 3600 ) } hour(s).` )
+			.then( async () =>
+			{
+				await infraction.update( { duration: `Completed` }, { where: { caseID: infraction.getDataValue( 'caseID' ) } } )
+			} )
+			.catch( async ( err ) =>
+			{
+				console.error( err )
+				const testGuild = await client.guilds.fetch( { force: false, cache: true, guild: '945355751260557393' } );
+				const errChannel = await testGuild.channels.fetch( '948089637774188564', { force: false, cache: true } );
+				errChannel.send( { content: `<@714473790939332679>, could not unmute <@${ infraction.getDataValue( 'targetID' ) }> for some reason. Check console.` } )
+			} )
+	}
+
 	return
 
-}, 1000 );
+}, 5000 );
 
 //Check if ConfessionsBot is online, ping if not
 
