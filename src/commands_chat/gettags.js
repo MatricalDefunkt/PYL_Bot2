@@ -112,7 +112,7 @@ module.exports = {
             {
                 if ( collected.customId === 'next' )
                 {
-                    if ( counter + 5 > count ) return collected.reply( { content: `No more tags left!`, ephemeral: true } )
+                    if ( counter + 5 > count ) return collected.reply( { content: `No more pages after this!`, ephemeral: true } )
                     counter += 5
                     const { rows: tags, count: tagCount } = await Tags.findAndCountAll( { limit: 5, offset: counter } )
                     const messageBuilder = [];
