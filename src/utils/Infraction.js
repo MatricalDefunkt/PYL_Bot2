@@ -14,7 +14,9 @@ class Infraction
         this.tempMute;
         this.warn;
         this.convertBan;
-        this.unban
+        this.unban;
+        this.unMute;
+        this.mute;
     }
     /**
      * Adds a note in the database for the given user.
@@ -86,7 +88,7 @@ class Infraction
             targetID: target,
             modID: moderatorId,
             reason: reason,
-            duration: duration
+            duration: String( duration )
         } ).catch( error => console.log( error ) )
         return this.tempBan = tempBan
     }
@@ -106,7 +108,7 @@ class Infraction
             targetID: target,
             modID: moderatorId,
             reason: reason,
-            duration: duration
+            duration: String( duration )
         } ).catch( error => console.log( error ) )
         return this.tempMute = tempMute
     }
@@ -163,6 +165,42 @@ class Infraction
             reason: reason
         } ).catch( error => console.log( error ) )
         return this.warn = warn
+    }
+    /**
+     * Adds an unmute in the database for the given user.
+     * @param {String} moderatorId 
+     * @param {String} target 
+     * @param {String} reason 
+     * @returns {Promise<Model> | Error}
+     */
+    async addUnMute ( moderatorId, target, reason )
+    {
+        const unMute = await Infractions.create( {
+            caseID: uniqid( 'unmute--' ),
+            type: 'Unmute',
+            targetID: target,
+            modID: moderatorId,
+            reason: reason
+        } ).catch( error => console.log( error ) )
+        return this.unMute = unMute
+    }
+    /**
+     * Adds a mute in the database for the given user.
+     * @param {String} moderatorId 
+     * @param {String} target 
+     * @param {String} reason 
+     * @returns {Promise<Model> | Error}
+     */
+    async addMute ( moderatorId, target, reason )
+    {
+        const mute = await Infractions.create( {
+            caseID: uniqid( 'mute--' ),
+            type: 'mute',
+            targetID: target,
+            modID: moderatorId,
+            reason: reason
+        } ).catch( error => console.log( error ) )
+        return this.mute = mute
     }
 }
 
