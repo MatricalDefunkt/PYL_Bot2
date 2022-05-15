@@ -1,5 +1,5 @@
 const { Client, CommandInteraction, MessageEmbed } = require( 'discord.js' );
-const { tempBans: tempInfractions } = require( '../../../database/database' );
+const { tempInfractions } = require( '../../../database/database' );
 const Infraction = require( '../../../utils/Infraction.js' );
 const { rules } = require( '../../../utils/rules.json' );
 
@@ -106,28 +106,7 @@ module.exports = {
                 ( duration.hours * 3600 )
             )
 
-            await tempInfractions
-                .create( {
-                    userID: bannee.id,
-                    finishTimeStamp: durationTimestamp,
-                    modID: interaction.user.id,
-                    reason: reason.rule,
-                    guildID: interaction.guild.id
-                } )
-                .then( () =>
-                {
-                    interaction.editReply( {
-                        content: `Data has been saved, continuing now...`,
-                    } );
-                } )
-                .catch( ( err ) =>
-                {
-                    interaction.editReply( {
-                        content: `There was an error. Please contact Matrical ASAP.`,
-                    } );
-                    console.error( err );
-                    return;
-                } );
+            
 
         } catch ( error )
         {
