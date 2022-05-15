@@ -1,11 +1,37 @@
-const { Client, CommandInteraction, MessageEmbed } = require( 'discord.js' );
+const { Client, CommandInteraction, MessageEmbed, MessageActionRow, MessageButton } = require( 'discord.js' );
 const Infraction = require( '../../../utils/Infraction.js' );
 const { rules } = require( '../../../utils/rules.json' );
+
+/**
+ * 
+ * @param {Client} client 
+ * @param {CommandInteraction} interaction 
+ * @param {Infraction} infraction 
+ * @param {Boolean} message
+ */
+const finalReply = async function ( client, interaction, infraction, message )
+{
+    const dbcaseId = infraction.mute.getDataValue( 'caseID' );
+    const dbtype = infraction.mute.getDataValue( 'type' );
+    const dbtarget = `<@${ infraction.mute.getDataValue( 'targetID' ) }>`;
+    const dbmod = `<@${ infraction.mute.getDataValue( 'modID' ) }>`;
+    const dbreason = infraction.mute.getDataValue( 'reason' );
+    const dbtime = `<t:${ Math.trunc( Date.parse( infraction.mute.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
+
+    const embed = new MessageEmbed()
+        .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
+        .setColor( 'YELLOW' )
+        .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
+        .setFooter( { iconURL: interaction.user.avatarURL(), text: `${ interaction.user.tag }${ ( message ) ? `` : ` || Did not recieve DM.` }` } )
+        .setTimestamp()
+    await interaction.editReply( { embeds: [ embed ] } )
+    return
+}
 
 module.exports = {
     data: {
         name: 'permanant',
-        parent: 'ban'
+        parent: 'mute'
     },
     /**
      * 
@@ -16,20 +42,18 @@ module.exports = {
     async execute ( client, interaction )
     {
 
-        const bannee = interaction.options.getMember( 'user' );
+        const mute = interaction.options.getMember( 'user' );
         let _reason = interaction.options.getInteger( 'reason' );
-        const time = interaction.options.getInteger( 'msg-history' );
 
-        if ( !bannee ) return interaction.editReply( { content: `The person you want to ban is not a member of this discord server.` } )
+        if ( !mute ) return interaction.editReply( { content: `The person you want to ban is not a member of this discord server.` } )
 
-        if ( bannee.bannable == false )
-        {
-            return interaction.editReply( { content: `I cannot ban ${ bannee }. They're too powerful 🤯!!` } )
-        } else if ( interaction.member === bannee )
-        {
-            return interaction.editReply( { content: `Okay, you have been banned. Now move on.` } )
-        }
+        if ( mute.id == interaction.user.id ) return interaction.editReply( { content: `Okay, you have been muted. Don't you speak anymore 🤫` } )
 
+        /**
+         * 
+         * @param {Number} reasonID 
+         * @returns { { id: Number, rule: String, reason: String } } Found rule and reason
+         */
         const getRule = ( reasonID ) =>
         {
             return rules.find( rule => rule.id == reasonID );
@@ -39,117 +63,124 @@ module.exports = {
 
         if ( _reason == 0 )
         {
-
-            reason = { id: 0, rule: interaction.options.getString( 'custom-reason' ) }
+            reason = {
+                id: 0,
+                rule: interaction.options.getString( 'custom-reason' ),
+                reason: interaction.options.getString( 'custom-reason' )
+            }
             if ( !reason.rule )
             {
-                reason = { id: 0, rule: 'None provided.' };
+                reason = { id: 0, rule: 'None provided.', reason: 'None provided.' };
             }
-            return reason;
+
         } else
         {
-
             reason = getRule( _reason )
-
         }
 
-        const disputable = interaction.options.getBoolean( 'disputable' )
-        let disputableReply;
-
-        if ( disputable === false )
+        if ( mute.roles.cache.has( '974245786781102081' ) )
         {
-            disputableReply = `Since this ban has been set as non-disputable, you may not dispute it, as it is now final.`
-        }
-        else 
-        {
-            disputableReply = `Since this ban has been set as disputable, you may join [this](https://discord.gg/UEwR4CUrug) server and dispute the ban there.`
-        }
-
-        try
-        {
-            const dmChannel = await bannee.createDM( true )
-            dmChannel.send( {
-                content: `Message from Practice Your Language:`, embeds: [
-                    new MessageEmbed()
-                        .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL( { size: 512 } ) } )
-                        .setColor( 'RED' )
-                        .setDescription( 'A message from PYL staff:' )
-                        .addField( 'Message:', 'You have been banned from PYL for breaking (a) server rule(s)' )
-                        .addField( 'Rule:', reason.rule )
-                        .addField( 'Dispute:', disputableReply )
-
-                ]
-            } ).then( () =>
-            {
-                interaction.editReply( { content: `${ bannee } has recieved the ban message.\nBanning now...` } )
-                bannee
-                    .ban( { days: time, reason: `${ interaction.user.tag } || ${ reason.rule }` } )
-                    .then( async () =>
+            const row = new MessageActionRow()
+                .addComponents( [
+                    new MessageButton()
+                        .setCustomId( 'yesadd' )
+                        .setEmoji( '✅' )
+                        .setStyle( 'SECONDARY' ),
+                    new MessageButton()
+                        .setCustomId( 'nocancel' )
+                        .setEmoji( '❎' )
+                        .setStyle( 'SECONDARY' )
+                ] )
+            const disabledRow = new MessageActionRow()
+                .addComponents( [
+                    new MessageButton()
+                        .setCustomId( 'yesadd' )
+                        .setEmoji( '✅' )
+                        .setStyle( 'SECONDARY' )
+                        .setDisabled( true ),
+                    new MessageButton()
+                        .setCustomId( 'nocancel' )
+                        .setEmoji( '❎' )
+                        .setStyle( 'SECONDARY' )
+                        .setDisabled( true )
+                ] )
+            const reply = await interaction.editReply( { content: `<@${ mute.id }> already has the muted role. Do you want to still store this infraction?`, components: [ row ] } )
+            reply.awaitMessageComponent( { time: 120_000, componentType: "BUTTON" } )
+                .then( async ( collected ) =>
+                {
+                    if ( collected.customId === 'yesadd' )
                     {
-                        await interaction.editReply( { content: `${ bannee } has been banned.` } )
                         const infraction = new Infraction()
-                        await infraction.addBan( interaction.user.id, bannee.user.id, reason.rule )
-                        const dbcaseId = infraction.ban.getDataValue( 'caseID' );
-                        const dbtype = infraction.ban.getDataValue( 'type' );
-                        const dbtarget = `<@${ infraction.ban.getDataValue( 'targetID' ) }>`;
-                        const dbmod = `<@${ infraction.ban.getDataValue( 'modID' ) }>`;
-                        const dbreason = infraction.ban.getDataValue( 'reason' );
-                        const dbtime = `<t:${ Math.trunc( Date.parse( infraction.ban.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
-        
-                        const embed = new MessageEmbed()
-                            .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
-                            .setColor( 'YELLOW' )
-                            .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
-                            .setFooter({iconURL: interaction.user.avatarURL(), text: interaction.user.tag})
-                            .setTimestamp()
-                        await interaction.editReply( { embeds: [ embed ] } )
-                    } )
-                    .catch(
-                        ( rejectedReason ) =>
-                        {
-                            interaction.editReply( { content: `Something went wrong. Please contact Matrical ASAP.` } )
-                            console.log( rejectedReason )
-                        } )
-            } )
-        } catch ( e )
-        {
-
-            if ( e.code === 50007 )
-            {
-                await interaction.editReply( { content: `Cannot send messages to ${ bannee }\nBanning now...` } )
-                await bannee
-                    .ban( { days: time, reason: `${ reason.rule }` } )
-                    .then( async () =>
+                        await infraction.addMute( interaction.user.id, mute.id, reason.reason )
+                        await collected.update( { content: `Done!`, components: [ disabledRow ] } )
+                        const message = true
+                        await finalReply( client, interaction, infraction, message )
+                        return
+                    } else
                     {
-                        await interaction.editReply( { content: `${ bannee } has been banned.` } )
-                        const infraction = new Infraction()
-                        await infraction.addBan( interaction.user.id, bannee.user.id, reason.rule )
-                        const dbcaseId = infraction.ban.getDataValue( 'caseID' );
-                        const dbtype = infraction.ban.getDataValue( 'type' );
-                        const dbtarget = `<@${ infraction.ban.getDataValue( 'targetID' ) }>`;
-                        const dbmod = `<@${ infraction.ban.getDataValue( 'modID' ) }>`;
-                        const dbreason = infraction.ban.getDataValue( 'reason' );
-                        const dbtime = `<t:${ Math.trunc( Date.parse( infraction.ban.getDataValue( 'createdAt' ) ) / 1000 ) }:F>`;
-        
-                        const embed = new MessageEmbed()
-                            .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL() } )
-                            .setColor( 'YELLOW' )
-                            .setDescription( `**Case ID -** ${ dbcaseId }\n**Type -** ${ dbtype }\n**Target -** ${ dbtarget }\n**Moderator -** ${ dbmod }\n**Reason -** ${ dbreason }\n**Time -** ${ dbtime }` )
-                            .setFooter({iconURL: interaction.user.avatarURL(), text: interaction.user.tag})
-                            .setTimestamp()
-                        await interaction.editReply( { embeds: [ embed ] } )
-                    } )
-                    .catch(
-                        ( rejectedReason ) =>
-                        {
-                            interaction.editReply( { content: `Something went wrong. Please contact Matrical ASAP.` } )
-                            console.log( rejectedReason )
-                        } )
-            } else
-            {
-                console.error( e )
-            }
+                        await collected.update( { content: `Okay, cancelled.`, components: [ disabledRow ] } )
+                        return
+                    }
+                } )
+                .catch( async ( err ) =>
+                {
+                    console.error( err )
+                    return interaction.editReply( { content: `You did not click a button in time. No action was taken.`, components: [ disabledRow ] } )
+                } )
+            return
+        } else
+        {
+            const infraction = new Infraction()
 
+            mute.roles.add( '974245786781102081', `${ interaction.user.tag } || ${ reason.reason }` )
+                .then( async ( result ) =>
+                {
+                    await infraction.addMute( interaction.user.id, mute.id, reason.reason )
+
+                    const dmChannel = await mute.createDM( true )
+                    dmChannel.send( {
+                        content: `Message from Practice Your Language:`, embeds: [
+                            new MessageEmbed()
+                                .setAuthor( { name: client.user.tag, iconURL: client.user.avatarURL( { size: 512 } ) } )
+                                .setColor( 'RED' )
+                                .setDescription( 'A message from PYL staff:' )
+                                .addField( 'Message:', 'You have been muted in PYL for breaking (a) server rule(s)' )
+                                .addField( 'Rule:', reason.rule )
+                                .addField( 'Dispute:', 'You may dispute this mute, if you so wish, in <#945355751260557396>' )
+                        ]
+                    } ).then( async () =>
+                    {
+                        const message = true
+                        return finalReply( client, interaction, infraction, message )
+
+                    } ).catch( ( e ) =>
+                    {
+                        if ( e.code === 50007 )
+                        {
+                            interaction.editReply( { content: `Cannot send messages to ${ mute }` } )
+                                .then( async () =>
+                                {
+                                    const message = false
+                                    return finalReply( client, interaction, infraction, message )
+                                } )
+                                .catch(
+                                    ( rejectedReason ) =>
+                                    {
+                                        interaction.editReply( { content: `Something went wrong. Please contact Matrical ASAP.` } )
+                                        console.log( rejectedReason )
+                                    } )
+                        } else
+                        {
+                            console.error( e )
+                            interaction.editReply( { content: `There was an error. Please contact Matrical ASAP.` } )
+                        }
+                    } )
+
+                } ).catch( ( err ) =>
+                {
+                    console.error( err )
+                    interaction.editReply( { content: `Could not add muted role to user. Please contact Matrical ASAP and check permissions.` } )
+                } );
         }
     }
 }
